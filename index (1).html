@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>System Design using Verilog · Dr. Sohel Rana</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:    #04060f;
+  --navy2:   #080d1c;
+  --navy3:   #0d1528;
+  --teal:    #00c9b1;
+  --teal2:   #00a896;
+  --amber:   #f6a623;
+  --amber2:  #e8930f;
+  --rose:    #ff6b6b;
+  --text:    #e8edf5;
+  --muted:   #7a8baa;
+  --border:  rgba(0,201,177,.18);
+  --glow:    rgba(0,201,177,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--navy);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+  line-height:1.65;
+}
+
+/* ── CIRCUIT CANVAS ── */
+#circuit-canvas{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;opacity:.35;
+}
+
+/* ── NAV ── */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.85rem 2rem;
+  background:rgba(4,6,15,.82);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(0,201,177,.12);
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-weight:700;
+  color:var(--teal);
+  text-decoration:none;letter-spacing:.01em;
+}
+.nav-logo span{color:var(--amber);}
+.nav-links{display:flex;gap:.2rem;align-items:center;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:.82rem;font-weight:500;
+  padding:.4rem .75rem;border-radius:7px;
+  transition:all .2s;white-space:nowrap;
+}
+.nav-links a:hover{color:var(--teal);background:var(--glow);}
+.hamburger{
+  display:none;flex-direction:column;gap:5px;
+  background:none;border:none;cursor:pointer;padding:.4rem;
+}
+.hamburger span{width:22px;height:2px;background:var(--teal);border-radius:2px;transition:.3s;}
+.mobile-menu{
+  display:none;position:fixed;top:58px;left:0;right:0;
+  background:rgba(4,6,15,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:1rem;flex-direction:column;gap:.3rem;z-index:190;
+}
+.mobile-menu a{
+  color:var(--muted);text-decoration:none;
+  padding:.65rem 1rem;border-radius:8px;
+  font-size:.9rem;font-weight:500;transition:.2s;
+}
+.mobile-menu a:hover{color:var(--teal);background:var(--glow);}
+.mobile-menu.open{display:flex;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;
+  padding:7rem 1.5rem 4rem;
+  position:relative;z-index:1;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:rgba(0,201,177,.08);
+  border:1px solid rgba(0,201,177,.25);
+  border-radius:999px;
+  padding:.35rem 1.1rem;
+  font-size:.75rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:1.6rem;
+  animation:fadeUp .6s ease both;
+}
+.hero-eyebrow .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 8px var(--teal);
+  animation:blink 1.5s infinite;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.4rem,7vw,5.5rem);
+  font-weight:900;line-height:1.08;
+  letter-spacing:-.02em;
+  animation:fadeUp .7s .1s ease both;
+}
+.hero h1 .line1{
+  background:linear-gradient(90deg,#fff 40%,var(--teal) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero h1 .line2{
+  background:linear-gradient(90deg,var(--amber) 0%,#fff 70%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  max-width:560px;margin:.8rem auto 0;
+  color:var(--muted);font-size:1.05rem;
+  animation:fadeUp .7s .2s ease both;
+}
+.hero-tags{
+  display:flex;flex-wrap:wrap;gap:.6rem;
+  justify-content:center;margin-top:1.8rem;
+  animation:fadeUp .7s .3s ease both;
+}
+.tag{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:.35rem .85rem;
+  font-size:.8rem;color:var(--muted);
+}
+.tag strong{color:var(--text);}
+.hero-cta{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  justify-content:center;margin-top:2.2rem;
+  animation:fadeUp .7s .4s ease both;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.6rem;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-weight:600;
+  font-size:.9rem;cursor:pointer;
+  text-decoration:none;transition:all .25s;border:none;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#04060f;
+  box-shadow:0 4px 20px rgba(0,201,177,.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,201,177,.45);}
+.btn-outline{
+  background:transparent;color:var(--text);
+  border:1px solid rgba(255,255,255,.2);
+}
+.btn-outline:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.35);}
+.hero-scroll{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  color:var(--muted);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  animation:fadeUp 1s .9s ease both;
+}
+.hero-scroll::after{
+  content:'';width:1px;height:36px;
+  background:linear-gradient(to bottom,var(--teal),transparent);
+  animation:scrollAnim 1.6s ease-in-out infinite;
+}
+
+/* ── SECTION COMMON ── */
+.section{padding:5rem 0;position:relative;z-index:1;}
+.container{max-width:1040px;margin:0 auto;padding:0 1.5rem;}
+.sec-label{
+  font-size:.72rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--teal);
+  display:flex;align-items:center;gap:.6rem;
+  margin-bottom:.6rem;
+}
+.sec-label::after{content:'';flex:0 0 40px;height:1px;background:var(--teal);opacity:.4;}
+.sec-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:900;
+  color:#fff;line-height:1.15;
+  margin-bottom:1rem;
+}
+
+/* ── PROFESSOR CARD ── */
+.prof-section{
+  background:linear-gradient(160deg,var(--navy2) 0%,var(--navy3) 100%);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.prof-inner{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:3rem;align-items:start;
+}
+.prof-photo-wrap{
+  position:relative;flex-shrink:0;
+}
+.prof-avatar{
+  width:100%;aspect-ratio:1;
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(0,201,177,.15),rgba(246,166,35,.1));
+  border:2px solid rgba(0,201,177,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:5rem;
+  position:relative;overflow:hidden;
+}
+.prof-avatar::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 40% 35%,rgba(0,201,177,.12),transparent 60%);
+}
+.prof-avatar-initials{
+  font-family:'Playfair Display',serif;
+  font-size:4rem;font-weight:900;
+  background:linear-gradient(135deg,var(--teal),var(--amber));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  position:relative;z-index:1;
+}
+.prof-badge{
+  position:absolute;bottom:-10px;right:-10px;
+  background:linear-gradient(135deg,var(--amber),var(--amber2));
+  border-radius:10px;padding:.35rem .7rem;
+  font-size:.72rem;font-weight:700;color:#04060f;
+  white-space:nowrap;
+  box-shadow:0 4px 16px rgba(246,166,35,.4);
+}
+.prof-name{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;font-weight:900;color:#fff;
+  line-height:1.1;
+}
+.prof-title{color:var(--teal);font-size:1rem;font-weight:600;margin:.3rem 0 .15rem;}
+.prof-dept{color:var(--muted);font-size:.88rem;margin-bottom:1.2rem;}
+.prof-bio{color:var(--muted);font-size:.93rem;line-height:1.75;margin-bottom:1.4rem;}
+.prof-stats{
+  display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:1.4rem;
+}
+.stat-chip{
+  background:rgba(0,201,177,.07);
+  border:1px solid rgba(0,201,177,.2);
+  border-radius:10px;padding:.5rem 1rem;
+  text-align:center;min-width:90px;
+}
+.stat-chip .num{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;color:var(--teal);
+  display:block;line-height:1;
+}
+.stat-chip .lbl{font-size:.72rem;color:var(--muted);margin-top:.2rem;display:block;}
+.prof-links{display:flex;flex-wrap:wrap;gap:.6rem;}
+.plink{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.45rem .9rem;border-radius:8px;
+  font-size:.82rem;font-weight:600;text-decoration:none;
+  transition:all .22s;
+}
+.plink-swayam{background:rgba(246,166,35,.1);color:var(--amber);border:1px solid rgba(246,166,35,.25);}
+.plink-swayam:hover{background:rgba(246,166,35,.2);transform:translateY(-1px);}
+.plink-yt{background:rgba(255,107,107,.1);color:var(--rose);border:1px solid rgba(255,107,107,.25);}
+.plink-yt:hover{background:rgba(255,107,107,.2);transform:translateY(-1px);}
+.plink-mail{background:rgba(0,201,177,.07);color:var(--teal);border:1px solid var(--border);}
+.plink-mail:hover{background:var(--glow);transform:translateY(-1px);}
+
+/* ── HIGHLIGHTS ── */
+.highlights-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1rem;margin-top:2rem;
+}
+.hl-card{
+  background:var(--navy2);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:1.3rem 1.4rem;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  position:relative;overflow:hidden;
+}
+.hl-card::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,201,177,.06),transparent 60%);
+  opacity:0;transition:.3s;pointer-events:none;
+}
+.hl-card:hover{transform:translateY(-4px);border-color:rgba(0,201,177,.3);box-shadow:0 12px 40px rgba(0,201,177,.1);}
+.hl-card:hover::after{opacity:1;}
+.hl-icon{
+  width:42px;height:42px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;margin-bottom:.9rem;
+}
+.hl-card h3{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.35rem;}
+.hl-card p{font-size:.82rem;color:var(--muted);line-height:1.55;}
+
+/* ── ABOUT COURSE ── */
+.course-info{
+  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;
+  margin-top:2rem;
+}
+.course-box{
+  background:var(--navy3);border:1px solid var(--border);
+  border-radius:16px;padding:1.4rem 1.6rem;
+}
+.course-box h3{
+  font-size:.9rem;font-weight:700;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;
+}
+.course-box ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
+.course-box ul li{
+  font-size:.88rem;color:var(--muted);
+  display:flex;align-items:flex-start;gap:.5rem;
+}
+.course-box ul li::before{content:'→';color:var(--teal);font-weight:700;flex-shrink:0;margin-top:.05rem;}
+
+/* ── CHAPTERS ── */
+.chapters-section{background:var(--navy2);}
+.chapters-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:1.1rem;margin-top:2.5rem;
+}
+.ch-card{
+  background:var(--navy3);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:1.5rem;
+  position:relative;overflow:hidden;
+  transition:all .28s;
+  display:flex;flex-direction:column;gap:0;
+}
+.ch-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--teal),var(--amber));
+  border-radius:16px 16px 0 0;
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .35s ease;
+}
+.ch-card:hover{transform:translateY(-4px);border-color:rgba(0,201,177,.25);box-shadow:0 16px 48px rgba(0,201,177,.08);}
+.ch-card:hover::before{transform:scaleX(1);}
+.ch-card.locked{opacity:.55;cursor:not-allowed;}
+.ch-card.locked:hover{transform:none;box-shadow:none;}
+.ch-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.7rem;}
+.ch-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;font-weight:700;
+  color:var(--teal);letter-spacing:.05em;
+  background:rgba(0,201,177,.1);border:1px solid rgba(0,201,177,.2);
+  border-radius:6px;padding:.2rem .5rem;
+  flex-shrink:0;
+}
+.ch-status{
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;border-radius:999px;
+  padding:.15rem .55rem;flex-shrink:0;
+}
+.status-live{background:rgba(0,201,177,.12);color:var(--teal);border:1px solid rgba(0,201,177,.25);}
+.status-coming{background:rgba(122,139,170,.1);color:var(--muted);border:1px solid rgba(122,139,170,.2);}
+.ch-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;font-weight:700;
+  color:#fff;line-height:1.3;margin-bottom:.5rem;
+}
+.ch-desc{font-size:.82rem;color:var(--muted);line-height:1.55;flex:1;margin-bottom:1.1rem;}
+.ch-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:auto;}
+.ch-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.45rem .9rem;border-radius:8px;
+  font-size:.8rem;font-weight:600;text-decoration:none;
+  transition:all .2s;
+}
+.ch-btn-notes{
+  background:rgba(0,201,177,.1);color:var(--teal);
+  border:1px solid rgba(0,201,177,.25);flex:1;justify-content:center;
+}
+.ch-btn-notes:hover{background:rgba(0,201,177,.2);}
+.ch-btn-quiz{
+  background:rgba(246,166,35,.08);color:var(--amber);
+  border:1px solid rgba(246,166,35,.2);flex:1;justify-content:center;
+}
+.ch-btn-quiz:hover{background:rgba(246,166,35,.18);}
+.ch-btn-disabled{
+  background:rgba(255,255,255,.03);color:rgba(122,139,170,.5);
+  border:1px solid rgba(255,255,255,.05);flex:1;justify-content:center;
+  cursor:not-allowed;
+}
+.ch-hours{
+  font-size:.75rem;color:var(--muted);
+  display:flex;align-items:center;gap:.3rem;margin-bottom:.8rem;
+}
+
+/* ── RESOURCES ── */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:2rem;}
+.res-card{
+  background:var(--navy2);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:1.3rem 1.4rem;
+  display:flex;gap:1rem;align-items:flex-start;
+  transition:all .25s;text-decoration:none;
+}
+.res-card:hover{border-color:rgba(0,201,177,.3);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,201,177,.08);}
+.res-icon{
+  width:44px;height:44px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
+}
+.res-card h3{font-size:.92rem;font-weight:700;color:#fff;margin-bottom:.2rem;}
+.res-card p{font-size:.8rem;color:var(--muted);line-height:1.45;}
+
+/* ── EXAM INFO ── */
+.exam-bar{
+  background:linear-gradient(135deg,rgba(246,166,35,.08),rgba(0,201,177,.05));
+  border:1px solid rgba(246,166,35,.2);
+  border-radius:16px;padding:1.4rem 1.8rem;
+  display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;
+  margin-top:2rem;
+}
+.exam-bar .exam-item{text-align:center;}
+.exam-bar .exam-item .ev{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--amber);display:block;}
+.exam-bar .exam-item .el{font-size:.75rem;color:var(--muted);}
+.exam-divider{width:1px;height:40px;background:rgba(255,255,255,.08);flex-shrink:0;}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--navy2);
+  border-top:1px solid var(--border);
+  padding:2.5rem 1.5rem;
+  text-align:center;
+  position:relative;z-index:1;
+}
+.footer-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.3rem;font-weight:900;
+  color:var(--teal);margin-bottom:.5rem;
+}
+footer p{color:var(--muted);font-size:.82rem;line-height:1.7;}
+.footer-links{display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap;margin:.8rem 0;}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:.82rem;transition:.2s;}
+.footer-links a:hover{color:var(--teal);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes scrollAnim{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+
+/* scroll-reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:760px){
+  .prof-inner{grid-template-columns:1fr;}
+  .prof-photo-wrap{max-width:200px;margin:0 auto;}
+  .course-info{grid-template-columns:1fr;}
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .hero{padding-top:5rem;}
+  .exam-bar{flex-direction:column;gap:.8rem;}
+  .exam-divider{display:none;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:2rem;}
+  .prof-stats{gap:.5rem;}
+  .stat-chip{min-width:75px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── CIRCUIT CANVAS ── -->
+<canvas id="circuit-canvas"></canvas>
+
+<!-- ── TOPNAV ── -->
+<nav class="topnav">
+  <a class="nav-logo" href="#">System Design <span>&lt;Verilog/&gt;</span></a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#course">Course</a>
+    <a href="#chapters">Chapters</a>
+    <a href="#resources">Resources</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="closeMenu()">About Professor</a>
+  <a href="#course" onclick="closeMenu()">Course Info</a>
+  <a href="#chapters" onclick="closeMenu()">Chapters</a>
+  <a href="#resources" onclick="closeMenu()">Resources</a>
+  <a href="#contact" onclick="closeMenu()">Contact</a>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <div class="hero-eyebrow"><span class="dot"></span>Second Year Electronics Engineering · 2 Credits</div>
+  <h1>
+    <span class="line1">System Design</span><br/>
+    <span class="line2">using Verilog</span>
+  </h1>
+  <p class="hero-sub">Master HDL-based digital design — from logic gates to programmable devices — with India's leading VLSI educator.</p>
+  <div class="hero-tags">
+    <div class="tag"><strong>Code:</strong> 2AF13/5PC412</div>
+    <div class="tag"><strong>PCC:</strong> 2L – 0T – 0P</div>
+    <div class="tag"><strong>Mid Sem:</strong> 20 Marks</div>
+    <div class="tag"><strong>End Sem:</strong> 60 Marks</div>
+    <div class="tag"><strong>Continuous:</strong> 20 Marks</div>
+  </div>
+  <div class="hero-cta">
+    <a href="#chapters" class="btn btn-primary">📚 Start Learning</a>
+    <a href="https://onlinecourses.swayam2.ac.in/e-learning/preview/aic21_ge25" target="_blank" class="btn btn-outline">🎓 SWAYAM Course</a>
+  </div>
+  <div class="hero-scroll">Explore</div>
+</section>
+
+<!-- ── PROFESSOR SECTION ── -->
+<section class="section prof-section" id="about">
+  <div class="container">
+    <div class="sec-label">Your Instructor</div>
+    <div class="prof-inner reveal">
+
+      <div class="prof-photo-wrap">
+        <div class="prof-avatar">
+          <span class="prof-avatar-initials">SR</span>
+        </div>
+        <div class="prof-badge">⭐ VLSI Expert</div>
+      </div>
+
+      <div>
+        <div class="prof-name">Dr. Sohel Rana</div>
+        <div class="prof-title">Professor — VLSI Engineering & Digital Design</div>
+        <div class="prof-dept">Department of Electronics Engineering (VLSI D&amp;T)</div>
+        <p class="prof-bio">
+          Dr. Sohel Rana is a distinguished professor in VLSI Engineering with over <strong style="color:#fff">20 years of academic and research experience</strong> across leading Indian and international universities. He is a nationally recognised educator currently offering his course on <strong style="color:#fff">System Design using Verilog</strong> on the SWAYAM national platform — reaching thousands of students across India. His teaching philosophy bridges rigorous theory with hands-on digital design practice using industry-standard HDL tools. He has mentored hundreds of students who have gone on to careers at top VLSI companies including Intel, Qualcomm, and Cadence.
+        </p>
+
+        <div class="prof-stats">
+          <div class="stat-chip"><span class="num">20+</span><span class="lbl">Years Experience</span></div>
+          <div class="stat-chip"><span class="num">🇮🇳</span><span class="lbl">SWAYAM National Faculty</span></div>
+          <div class="stat-chip"><span class="num">VLSI</span><span class="lbl">Specialisation</span></div>
+          <div class="stat-chip"><span class="num">HDL</span><span class="lbl">Research Focus</span></div>
+        </div>
+
+        <div class="prof-links">
+          <a href="https://onlinecourses.swayam2.ac.in/e-learning/preview/aic21_ge25" target="_blank" class="plink plink-swayam">🎓 SWAYAM / AICTE Course</a>
+          <a href="https://www.youtube.com/watch?v=zHPe5ivihJo" target="_blank" class="plink plink-yt">▶ YouTube – Verilog Intro Lecture</a>
+          <a href="#contact" class="plink plink-mail">✉ Contact</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Highlights -->
+    <div class="highlights-grid reveal" style="margin-top:3rem;">
+      <div class="hl-card">
+        <div class="hl-icon" style="background:rgba(0,201,177,.12);">🏛️</div>
+        <h3>National SWAYAM Faculty</h3>
+        <p>Teaching System Design using Verilog on the AICTE-SWAYAM national platform — accessible to students across all Indian universities.</p>
+      </div>
+      <div class="hl-card">
+        <div class="hl-icon" style="background:rgba(246,166,35,.1);">🌍</div>
+        <h3>International Experience</h3>
+        <p>Academic and research experience at prestigious Indian and foreign universities — bringing global VLSI design perspectives to the classroom.</p>
+      </div>
+      <div class="hl-card">
+        <div class="hl-icon" style="background:rgba(255,107,107,.1);">▶</div>
+        <h3>YouTube Learning Series</h3>
+        <p>Complete lecture series on Verilog HDL available on YouTube, covering the full course syllabus from introduction to advanced synthesis.</p>
+      </div>
+      <div class="hl-card">
+        <div class="hl-icon" style="background:rgba(124,58,237,.15);">🔬</div>
+        <h3>VLSI Research & Industry</h3>
+        <p>Deep expertise in FPGA-based design, digital synthesis, and sequential circuit optimisation — aligned with current industry practices.</p>
+      </div>
+      <div class="hl-card">
+        <div class="hl-icon" style="background:rgba(0,201,177,.09);">🎓</div>
+        <h3>Dedicated Student Resources</h3>
+        <p>Chapter-wise rich notes, interactive MCQ quizzes, and detailed Q&A — all designed to help students excel in university examinations.</p>
+      </div>
+      <div class="hl-card">
+        <div class="hl-icon" style="background:rgba(246,166,35,.09);">📐</div>
+        <h3>Industry-Aligned Syllabus</h3>
+        <p>Course content mapped to modern VLSI workflows — covering Verilog, behavioural modelling, FSMs, synthesis, and PLDs/CPLDs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COURSE OVERVIEW ── -->
+<section class="section" id="course">
+  <div class="container">
+    <div class="sec-label">Course Details</div>
+    <div class="sec-title reveal">About This Subject</div>
+    <p class="reveal" style="color:var(--muted);max-width:620px;font-size:.95rem;">
+      System Design using Verilog (2AF13/5PC412) is a 2-credit core course for Second Year Electronics Engineering students. It covers HDL-based design of combinational, sequential, and programmable logic systems.
+    </p>
+
+    <div class="course-info reveal">
+      <div class="course-box">
+        <h3>🎯 Course Objectives</h3>
+        <ul>
+          <li>Learn the basic language features of Verilog HDL and the role of HDL in digital logic design</li>
+          <li>Understand the behavioural modelling of combinational and simple sequential circuits</li>
+          <li>Know the behavioural modelling of algorithmic state machines</li>
+          <li>Learn the synthesis of combinational and sequential circuits</li>
+          <li>Understand the architectural features of programmable logic devices</li>
+        </ul>
+      </div>
+      <div class="course-box">
+        <h3>🏆 Course Outcomes</h3>
+        <ul>
+          <li>Design and implement HDL-based digital circuits: switch-debouncing, metastability, memory devices</li>
+          <li>Solve algorithmic state machines using hardware description language</li>
+          <li>Analyse the synthesis process of combinational and sequential descriptions</li>
+          <li>Memorise advantages of programmable logic devices and their applications</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exam-bar reveal">
+      <div class="exam-item"><span class="ev">20</span><span class="el">Continuous Assessment</span></div>
+      <div class="exam-divider"></div>
+      <div class="exam-item"><span class="ev">20</span><span class="el">Mid Semester Exam</span></div>
+      <div class="exam-divider"></div>
+      <div class="exam-item"><span class="ev">60</span><span class="el">End Semester Exam</span></div>
+      <div class="exam-divider"></div>
+      <div class="exam-item"><span class="ev">5</span><span class="el">Units Total</span></div>
+      <div class="exam-divider"></div>
+      <div class="exam-item"><span class="ev">40</span><span class="el">Lecture Hours</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CHAPTERS ── -->
+<section class="section chapters-section" id="chapters">
+  <div class="container">
+    <div class="sec-label">Study Material</div>
+    <div class="sec-title reveal">Chapter-wise Notes &amp; Quizzes</div>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;max-width:580px;">Click <span style="color:var(--teal)">📖 Notes</span> for the full interactive chapter page or <span style="color:var(--amber)">🎯 Quiz</span> for practice MCQs. New chapters will be added progressively.</p>
+
+    <div class="chapters-grid reveal">
+
+      <!-- CHAPTER 1 — LIVE -->
+      <div class="ch-card">
+        <div class="ch-top">
+          <span class="ch-num">UNIT-1</span>
+          <span class="ch-status status-live">● Live</span>
+        </div>
+        <div class="ch-title">Introduction to Logic Design with Verilog</div>
+        <div class="ch-hours">⏱ 8 Hours</div>
+        <div class="ch-desc">Structural models, logic simulation, design verification, propagation delay, truth tables, combinational &amp; sequential logic, Verilog modules, ports, gate types, expressions, operators.</div>
+        <div class="ch-actions">
+          <a href="chapter-1.html" class="ch-btn ch-btn-notes">📖 Notes</a>
+          <a href="chapter-1_mcqs.html" class="ch-btn ch-btn-quiz">🎯 Quiz</a>
+        </div>
+      </div>
+
+      <!-- CHAPTER 2 — COMING -->
+      <div class="ch-card locked">
+        <div class="ch-top">
+          <span class="ch-num">UNIT-2</span>
+          <span class="ch-status status-coming">Coming Soon</span>
+        </div>
+        <div class="ch-title">Behavioral Models of Combinational &amp; Sequential Logic</div>
+        <div class="ch-hours">⏱ 8 Hours</div>
+        <div class="ch-desc">Data types, behavioral modeling, combinational &amp; sequential logic models, flip-flops, latches, cyclic behavioral models, edge detection, comparison of styles.</div>
+        <div class="ch-actions">
+          <span class="ch-btn ch-btn-disabled">🔒 Notes</span>
+          <span class="ch-btn ch-btn-disabled">🔒 Quiz</span>
+        </div>
+      </div>
+
+      <!-- CHAPTER 3 — COMING -->
+      <div class="ch-card locked">
+        <div class="ch-top">
+          <span class="ch-num">UNIT-3</span>
+          <span class="ch-status status-coming">Coming Soon</span>
+        </div>
+        <div class="ch-title">Multiplexers, Encoders, Decoders &amp; LFSR</div>
+        <div class="ch-hours">⏱ 8 Hours</div>
+        <div class="ch-desc">Behavioral models of multiplexers, encoders, decoders, data flow model of LFSR, state machines, signal charts, shift registers, counters, synchronizers for async interfaces.</div>
+        <div class="ch-actions">
+          <span class="ch-btn ch-btn-disabled">🔒 Notes</span>
+          <span class="ch-btn ch-btn-disabled">🔒 Quiz</span>
+        </div>
+      </div>
+
+      <!-- CHAPTER 4 — COMING -->
+      <div class="ch-card locked">
+        <div class="ch-top">
+          <span class="ch-num">UNIT-4</span>
+          <span class="ch-status status-coming">Coming Soon</span>
+        </div>
+        <div class="ch-title">Synthesis of Combinational &amp; Sequential Logic</div>
+        <div class="ch-hours">⏱ 8 Hours</div>
+        <div class="ch-desc">Synthesis with latches, three state devices, bus interfaces, synthesis of sequential logic, explicit state machines, n-bit synchronous counter, synchronous counter as sequence detector.</div>
+        <div class="ch-actions">
+          <span class="ch-btn ch-btn-disabled">🔒 Notes</span>
+          <span class="ch-btn ch-btn-disabled">🔒 Quiz</span>
+        </div>
+      </div>
+
+      <!-- CHAPTER 5 — COMING -->
+      <div class="ch-card locked">
+        <div class="ch-top">
+          <span class="ch-num">UNIT-5</span>
+          <span class="ch-status status-coming">Coming Soon</span>
+        </div>
+        <div class="ch-title">Programmable Logic Devices &amp; FPGAs</div>
+        <div class="ch-hours">⏱ 8 Hours</div>
+        <div class="ch-desc">Programmable logic devices, storage devices, PAL, PLA, CPLD, FPGA architecture, programming methodology, design flow, and practical implementation on FPGA boards.</div>
+        <div class="ch-actions">
+          <span class="ch-btn ch-btn-disabled">🔒 Notes</span>
+          <span class="ch-btn ch-btn-disabled">🔒 Quiz</span>
+        </div>
+      </div>
+
+      <!-- PLACEHOLDER — ADD MORE -->
+      <div class="ch-card" style="border-style:dashed;border-color:rgba(255,255,255,.1);justify-content:center;align-items:center;min-height:220px;text-align:center;cursor:default;">
+        <div style="font-size:2rem;margin-bottom:.6rem;">➕</div>
+        <div style="color:var(--muted);font-size:.88rem;font-weight:600;">More chapters coming soon</div>
+        <div style="color:rgba(122,139,170,.5);font-size:.78rem;margin-top:.3rem;">Check back regularly for updates</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── RESOURCES ── -->
+<section class="section" id="resources">
+  <div class="container">
+    <div class="sec-label">Learning Resources</div>
+    <div class="sec-title reveal">External Study Links</div>
+
+    <div class="res-grid reveal">
+      <a href="https://onlinecourses.swayam2.ac.in/e-learning/preview/aic21_ge25" target="_blank" class="res-card">
+        <div class="res-icon" style="background:rgba(246,166,35,.1);">🎓</div>
+        <div>
+          <h3>SWAYAM / AICTE Course</h3>
+          <p>Enroll in Dr. Sohel Rana's official national-level Verilog course on the AICTE-SWAYAM platform. Free to learn, certificate available.</p>
+        </div>
+      </a>
+      <a href="https://www.youtube.com/watch?v=zHPe5ivihJo" target="_blank" class="res-card">
+        <div class="res-icon" style="background:rgba(255,107,107,.1);">▶</div>
+        <div>
+          <h3>YouTube – Introduction to Verilog</h3>
+          <p>Watch the introductory lecture of the Verilog course on YouTube — video explanations alongside these chapter notes for best results.</p>
+        </div>
+      </a>
+      <div class="res-card" style="text-decoration:none;cursor:default;">
+        <div class="res-icon" style="background:rgba(0,201,177,.1);">📘</div>
+        <div>
+          <h3>Recommended Textbooks</h3>
+          <p><strong style="color:var(--teal)">1.</strong> M D Ciletti – Advanced Digital Design with Verilog HDL<br>
+          <strong style="color:var(--teal)">2.</strong> Palnitkar – Verilog HDL, 2nd Ed, Pearson<br>
+          <strong style="color:var(--teal)">3.</strong> Zvonko Vranesic – Fundamentals of Digital Logic with Verilog</p>
+        </div>
+      </div>
+      <div class="res-card" style="text-decoration:none;cursor:default;">
+        <div class="res-icon" style="background:rgba(124,58,237,.15);">🛠️</div>
+        <div>
+          <h3>Free Simulation Tools</h3>
+          <p><strong style="color:#c4b5fd">EDA Playground</strong> – browser-based Verilog simulator (edaplayground.com)<br>
+          <strong style="color:#c4b5fd">Icarus Verilog + GTKWave</strong> – free open-source simulation suite</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="section" id="contact" style="background:var(--navy2);border-top:1px solid var(--border);">
+  <div class="container" style="text-align:center;">
+    <div class="sec-label" style="justify-content:center;">Reach Out</div>
+    <div class="sec-title reveal">Have Questions?</div>
+    <p class="reveal" style="color:var(--muted);max-width:480px;margin:0 auto 2rem;font-size:.93rem;">Reach out to Dr. Sohel Rana for academic queries, project guidance, or to know more about the VLSI programme.</p>
+    <div class="reveal" style="display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;">
+      <a href="https://onlinecourses.swayam2.ac.in/e-learning/preview/aic21_ge25" target="_blank" class="btn btn-primary">Visit SWAYAM Course Page</a>
+      <a href="https://www.youtube.com/watch?v=zHPe5ivihJo" target="_blank" class="btn btn-outline">▶ Watch on YouTube</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">&lt;Verilog/&gt;</div>
+  <p>System Design using Verilog · Second Year Electronics Engineering</p>
+  <div class="footer-links">
+    <a href="#top">Home</a>
+    <a href="chapter-1.html">Chapter 1</a>
+    <a href="chapter-1_mcqs.html">Chapter 1 Quiz</a>
+    <a href="https://onlinecourses.swayam2.ac.in/e-learning/preview/aic21_ge25" target="_blank">SWAYAM</a>
+    <a href="https://www.youtube.com/watch?v=zHPe5ivihJo" target="_blank">YouTube</a>
+  </div>
+  <p style="color:rgba(122,139,170,.45);margin-top:.3rem;">Dept. of Electronics Engineering (VLSI D&T) · Course Code: 2AF13/5PC412</p>
+</footer>
+
+<script>
+// ── CIRCUIT CANVAS ANIMATION ──
+const canvas = document.getElementById('circuit-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [], pulses = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initNodes(); });
+
+function initNodes() {
+  nodes = [];
+  const spacing = 90;
+  for (let x = 0; x < W + spacing; x += spacing) {
+    for (let y = 0; y < H + spacing; y += spacing) {
+      if (Math.random() > 0.35) {
+        nodes.push({
+          x: x + (Math.random() - .5) * 30,
+          y: y + (Math.random() - .5) * 30,
+          connections: [],
+          r: Math.random() * 2 + 1
+        });
+      }
+    }
+  }
+  // connect nearby nodes
+  nodes.forEach(n => {
+    nodes.forEach(m => {
+      if (n === m) return;
+      const d = Math.hypot(n.x - m.x, n.y - m.y);
+      if (d < 130 && n.connections.length < 3 && Math.random() > .6) {
+        n.connections.push(m);
+      }
+    });
+  });
+}
+initNodes();
+
+// pulse object
+function spawnPulse() {
+  const n = nodes[Math.floor(Math.random() * nodes.length)];
+  if (!n || !n.connections.length) return;
+  const target = n.connections[Math.floor(Math.random() * n.connections.length)];
+  pulses.push({ sx: n.x, sy: n.y, ex: target.x, ey: target.y, t: 0, speed: .012 + Math.random() * .015 });
+}
+
+setInterval(spawnPulse, 180);
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // draw edges
+  nodes.forEach(n => {
+    n.connections.forEach(m => {
+      ctx.beginPath();
+      ctx.moveTo(n.x, n.y);
+      ctx.lineTo(m.x, m.y);
+      ctx.strokeStyle = 'rgba(0,201,177,0.08)';
+      ctx.lineWidth = .8;
+      ctx.stroke();
+    });
+  });
+
+  // draw node dots
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,201,177,0.25)';
+    ctx.fill();
+  });
+
+  // draw pulses
+  pulses = pulses.filter(p => p.t <= 1);
+  pulses.forEach(p => {
+    p.t += p.speed;
+    const px = p.sx + (p.ex - p.sx) * p.t;
+    const py = p.sy + (p.ey - p.sy) * p.t;
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,201,177,${.9 - p.t * .7})`;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = '#00c9b1';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ── MOBILE MENU ──
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── NAV ACTIVE ──
+const navLinks = document.querySelectorAll('.nav-links a, .mobile-menu a');
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 140) cur = s.id;
+  });
+  navLinks.forEach(a => {
+    const href = a.getAttribute('href');
+    a.style.color = href === `#${cur}` ? 'var(--teal)' : '';
+  });
+});
+</script>
+</body>
+</html>

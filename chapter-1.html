@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chapter 1 – Introduction to Logic Design with Verilog</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg2: #10101e;
+    --card: #14142a;
+    --card2: #1a1a35;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --accent4: #10b981;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: rgba(124,58,237,0.25);
+    --glow: rgba(124,58,237,0.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+
+  /* ── HERO ── */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    justify-content:center;align-items:center;
+    text-align:center;
+    padding:2rem;
+    position:relative;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,58,237,.35) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6,182,212,.2) 0%, transparent 60%),
+                var(--bg);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background-image: repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(124,58,237,.07) 40px),
+                      repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(124,58,237,.07) 40px);
+    pointer-events:none;
+  }
+  .chip{
+    display:inline-flex;align-items:center;gap:.5rem;
+    background:rgba(124,58,237,.18);border:1px solid var(--border);
+    border-radius:999px;padding:.35rem 1rem;
+    font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:#a78bfa;margin-bottom:1.5rem;
+    animation:fadeDown .6s ease both;
+  }
+  .chip span{width:6px;height:6px;border-radius:50%;background:#7c3aed;
+    box-shadow:0 0 8px #7c3aed;display:inline-block;animation:pulse 1.5s infinite;}
+  .hero h1{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(2.2rem,6vw,5rem);
+    font-weight:800;line-height:1.1;
+    background:linear-gradient(135deg,#fff 30%,#a78bfa 60%,#06b6d4 90%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    animation:fadeUp .7s .1s ease both;
+  }
+  .hero p.sub{
+    max-width:620px;margin:.8rem auto 0;
+    color:var(--muted);font-size:1.05rem;
+    animation:fadeUp .7s .2s ease both;
+  }
+  .hero-meta{
+    display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;
+    margin-top:2rem;animation:fadeUp .7s .3s ease both;
+  }
+  .hero-meta .badge{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:8px;padding:.4rem .9rem;font-size:.85rem;color:var(--muted);
+  }
+  .hero-meta .badge strong{color:#e2e8f0;}
+  .scroll-hint{
+    position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:.4rem;
+    color:var(--muted);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+    animation:fadeUp 1s .8s ease both;
+  }
+  .scroll-hint::after{
+    content:'';width:1px;height:40px;background:linear-gradient(to bottom,var(--muted),transparent);
+    animation:scrollLine 1.5s ease-in-out infinite;
+  }
+
+  /* ── NAV ── */
+  nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(10,10,18,.85);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+    padding:.7rem 2rem;
+    display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;
+    overflow-x:auto;
+  }
+  nav a{
+    color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:500;
+    padding:.3rem .7rem;border-radius:6px;white-space:nowrap;
+    transition:all .2s;
+  }
+  nav a:hover,nav a.active{color:#fff;background:rgba(124,58,237,.3);}
+  .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;
+    color:#a78bfa;margin-right:auto;white-space:nowrap;}
+
+  /* ── LAYOUT ── */
+  .container{max-width:900px;margin:0 auto;padding:2rem 1.5rem;}
+  section{padding:3rem 0;}
+
+  /* ── SECTION TITLE ── */
+  .sec-head{margin-bottom:2rem;}
+  .sec-head .label{
+    font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent2);display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;
+  }
+  .sec-head .label::before{content:'';flex:1;height:1px;background:var(--accent2);opacity:.3;}
+  .sec-head h2{
+    font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;
+    background:linear-gradient(90deg,#fff,#a78bfa);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+
+  /* ── CARDS ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:1.6rem 1.8rem;
+    transition:transform .25s,box-shadow .25s;
+    position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    border-radius:16px 16px 0 0;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(124,58,237,.15);}
+  .card h3{font-size:1.05rem;font-weight:700;color:#c4b5fd;margin-bottom:.6rem;}
+  .card p{color:var(--muted);font-size:.95rem;}
+
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+
+  /* ── CONCEPT BLOCK ── */
+  .concept{
+    background:var(--card2);border:1px solid rgba(6,182,212,.2);
+    border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;
+  }
+  .concept h3{
+    font-size:1.1rem;font-weight:700;
+    display:flex;align-items:center;gap:.6rem;
+    margin-bottom:.7rem;color:#67e8f9;
+  }
+  .concept h3 .icon{
+    width:32px;height:32px;border-radius:8px;
+    background:rgba(6,182,212,.15);display:flex;align-items:center;justify-content:center;
+    font-size:1rem;flex-shrink:0;
+  }
+
+  /* ── EXAMPLE BOX ── */
+  .example{
+    background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(6,182,212,.05));
+    border:1px solid rgba(16,185,129,.25);border-radius:12px;
+    padding:1.2rem 1.4rem;margin:1.2rem 0;
+  }
+  .example .ex-tag{
+    font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:#34d399;display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.5rem;
+  }
+  .example .ex-tag::before{content:'🇮🇳';}
+  .example p{font-size:.95rem;color:var(--text);}
+  .example code{
+    display:block;margin-top:.8rem;
+    background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);
+    border-radius:8px;padding:.8rem 1rem;
+    font-family:'JetBrains Mono',monospace;font-size:.82rem;
+    color:#86efac;line-height:1.6;white-space:pre;overflow-x:auto;
+  }
+
+  /* ── CODE BLOCK ── */
+  .codeblock{
+    background:#0d0d1f;border:1px solid rgba(124,58,237,.3);
+    border-radius:12px;overflow:hidden;margin:1.2rem 0;
+  }
+  .codeblock .cb-head{
+    background:rgba(124,58,237,.12);padding:.5rem 1rem;
+    font-size:.75rem;font-weight:600;color:#a78bfa;
+    display:flex;align-items:center;gap:.5rem;letter-spacing:.05em;
+    border-bottom:1px solid rgba(124,58,237,.2);
+  }
+  .codeblock pre{
+    font-family:'JetBrains Mono',monospace;font-size:.83rem;
+    padding:1.1rem 1.2rem;color:#c4b5fd;line-height:1.7;
+    overflow-x:auto;
+  }
+  .codeblock pre .kw{color:#f472b6;}
+  .codeblock pre .cm{color:#64748b;font-style:italic;}
+  .codeblock pre .str{color:#86efac;}
+  .codeblock pre .num{color:#fb923c;}
+
+  /* ── TRUTH TABLE ── */
+  .table-wrap{overflow-x:auto;margin:1rem 0;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  th{
+    background:rgba(124,58,237,.25);color:#c4b5fd;
+    padding:.6rem .9rem;text-align:center;font-weight:600;
+    border:1px solid var(--border);
+  }
+  td{
+    padding:.55rem .9rem;text-align:center;
+    border:1px solid rgba(124,58,237,.15);color:var(--text);
+  }
+  tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+  tr:hover td{background:rgba(124,58,237,.08);}
+
+  /* ── HIGHLIGHT BOX ── */
+  .info-box{
+    display:flex;gap:1rem;align-items:flex-start;
+    background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);
+    border-radius:12px;padding:1rem 1.2rem;margin:1rem 0;
+  }
+  .info-box .ib-icon{font-size:1.4rem;flex-shrink:0;margin-top:.05rem;}
+  .info-box p{font-size:.9rem;color:var(--text);}
+  .info-box p strong{color:#fbbf24;}
+
+  /* ── MCQ SECTION ── */
+  .mcq-section{padding:3rem 0;}
+  .mcq-header{
+    text-align:center;margin-bottom:2.5rem;
+  }
+  .mcq-header h2{
+    font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;
+    background:linear-gradient(90deg,#f59e0b,#ef4444);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .mcq-counter{
+    display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;
+    margin-top:1rem;font-size:.85rem;color:var(--muted);
+  }
+  .mcq-counter span{background:rgba(255,255,255,.05);border-radius:6px;padding:.2rem .7rem;}
+  #score-board{
+    background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.1));
+    border:1px solid var(--border);border-radius:16px;padding:1.5rem;
+    text-align:center;margin-bottom:2rem;display:none;
+  }
+  #score-board h3{font-family:'Syne',sans-serif;font-size:1.6rem;color:#a78bfa;}
+  #score-board p{color:var(--muted);margin-top:.4rem;}
+
+  .mcq-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;
+    transition:border-color .3s;
+  }
+  .mcq-card.correct{border-color:#10b981;background:rgba(16,185,129,.06);}
+  .mcq-card.wrong{border-color:#ef4444;background:rgba(239,68,68,.05);}
+  .mcq-q{
+    font-weight:600;font-size:.97rem;margin-bottom:1rem;
+    display:flex;gap:.7rem;
+  }
+  .q-num{
+    min-width:28px;height:28px;border-radius:8px;
+    background:rgba(124,58,237,.3);color:#c4b5fd;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.8rem;font-weight:700;flex-shrink:0;
+  }
+  .options{display:grid;gap:.5rem;}
+  .opt-btn{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:9px;padding:.6rem 1rem;
+    text-align:left;cursor:pointer;
+    font-family:'Space Grotesk',sans-serif;font-size:.88rem;color:var(--text);
+    transition:all .2s;display:flex;align-items:center;gap:.7rem;
+  }
+  .opt-btn:hover:not(:disabled){background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);}
+  .opt-btn.selected{background:rgba(124,58,237,.2);border-color:#7c3aed;color:#c4b5fd;}
+  .opt-btn.correct-opt{background:rgba(16,185,129,.15);border-color:#10b981;color:#34d399;}
+  .opt-btn.wrong-opt{background:rgba(239,68,68,.12);border-color:#ef4444;color:#fca5a5;}
+  .opt-label{
+    width:22px;height:22px;border-radius:6px;
+    background:rgba(255,255,255,.06);display:flex;align-items:center;
+    justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;
+  }
+  .explanation{
+    margin-top:.8rem;padding:.7rem 1rem;
+    background:rgba(6,182,212,.07);border-left:3px solid #06b6d4;
+    border-radius:0 8px 8px 0;font-size:.86rem;color:#7dd3fc;display:none;
+  }
+  .mcq-controls{
+    display:flex;justify-content:center;gap:1rem;margin-top:2rem;flex-wrap:wrap;
+  }
+  .btn{
+    padding:.7rem 1.6rem;border-radius:10px;border:none;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;
+    cursor:pointer;transition:all .25s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;
+    box-shadow:0 4px 16px rgba(124,58,237,.35);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.45);}
+  .btn-secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.15);}
+  .btn-secondary:hover{background:rgba(255,255,255,.13);}
+
+  /* ── Q&A SECTION ── */
+  .qa-section{padding:3rem 0;}
+  .accordion{margin-bottom:.8rem;}
+  .acc-head{
+    width:100%;background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1rem 1.2rem;
+    display:flex;align-items:flex-start;gap:.8rem;
+    cursor:pointer;text-align:left;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.93rem;color:var(--text);
+    transition:all .2s;
+  }
+  .acc-head:hover{background:var(--card2);border-color:#7c3aed;}
+  .acc-head.open{background:var(--card2);border-color:#7c3aed;border-radius:12px 12px 0 0;}
+  .acc-num{
+    min-width:26px;height:26px;border-radius:7px;
+    background:rgba(124,58,237,.25);color:#a78bfa;
+    font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;margin-top:.05rem;
+  }
+  .acc-arrow{margin-left:auto;flex-shrink:0;color:var(--muted);transition:transform .3s;font-size:1rem;}
+  .acc-head.open .acc-arrow{transform:rotate(180deg);color:#a78bfa;}
+  .acc-body{
+    background:rgba(20,20,42,.8);border:1px solid #7c3aed;border-top:none;
+    border-radius:0 0 12px 12px;padding:1.1rem 1.3rem;
+    font-size:.9rem;color:var(--muted);line-height:1.75;
+    display:none;
+  }
+  .acc-body.open{display:block;animation:slideDown .25s ease;}
+  .acc-body strong{color:#c4b5fd;}
+  .acc-body ul{padding-left:1.2rem;margin-top:.4rem;}
+  .acc-body ul li{margin-bottom:.3rem;}
+  .type-tag{
+    font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:.15rem .5rem;border-radius:5px;flex-shrink:0;margin-top:.1rem;
+  }
+  .type-short{background:rgba(16,185,129,.15);color:#34d399;}
+  .type-long{background:rgba(245,158,11,.15);color:#fbbf24;}
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap{background:rgba(255,255,255,.06);border-radius:999px;height:4px;margin:1.5rem 0;}
+  .progress-bar{height:4px;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#06b6d4);
+    transition:width .5s ease;}
+
+  /* ── FOOTER ── */
+  footer{
+    text-align:center;padding:2rem;color:var(--muted);font-size:.82rem;
+    border-top:1px solid var(--border);margin-top:3rem;
+  }
+  footer span{color:#a78bfa;font-weight:600;}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  @keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:600px){
+    .container{padding:1.2rem 1rem;}
+    nav{padding:.5rem 1rem;}
+    .codeblock pre{font-size:.75rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="top">
+  <div class="chip"><span></span>Second Year Electronics Engineering</div>
+  <h1>Introduction to Logic<br/>Design with Verilog</h1>
+  <p class="sub">Unit 1 · System Design using Verilog &nbsp;|&nbsp; Dept. of Electronics Engineering (VLSI D&T)</p>
+  <div class="hero-meta">
+    <div class="badge"><strong>Subject Code:</strong> 2AF13/5PC412</div>
+    <div class="badge"><strong>Credits:</strong> 2</div>
+    <div class="badge"><strong>Hours:</strong> 8</div>
+    <div class="badge"><strong>HDL:</strong> Verilog</div>
+  </div>
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- ══════════ NAV ══════════ -->
+<nav>
+  <span class="nav-brand">⚡ Verilog Ch.1</span>
+  <a href="#overview">Overview</a>
+  <a href="#hdl-intro">HDL Basics</a>
+  <a href="#structural">Structural</a>
+  <a href="#behavioural">Behavioural</a>
+  <a href="#sequential">Sequential</a>
+  <a href="#modules">Modules</a>
+  <a href="#operators">Operators</a>
+  <a href="#mcq">MCQ Quiz</a>
+  <a href="#short-qa">Short Q&A</a>
+  <a href="#long-qa">Long Q&A</a>
+</nav>
+
+<!-- ══════════ OVERVIEW ══════════ -->
+<div class="container">
+<section id="overview">
+  <div class="sec-head">
+    <div class="label">Unit 1 · 8 Hours</div>
+    <h2>What Is This Chapter About?</h2>
+  </div>
+  <div class="grid3">
+    <div class="card">
+      <h3>🧠 Structural Models</h3>
+      <p>Design circuits by connecting gates and modules, just like assembling a smartphone motherboard.</p>
+    </div>
+    <div class="card">
+      <h3>⚙️ Behavioural Models</h3>
+      <p>Describe what a circuit <em>does</em>, not how it's built — like writing an app in code.</p>
+    </div>
+    <div class="card">
+      <h3>🔬 Logic Simulation</h3>
+      <p>Test your design virtually before burning it to actual silicon or an FPGA chip.</p>
+    </div>
+    <div class="card">
+      <h3>📐 Design Verification</h3>
+      <p>Truth tables, test methodology, propagation delay — ensure correctness before fabrication.</p>
+    </div>
+    <div class="card">
+      <h3>🔄 Sequential Logic</h3>
+      <p>Logic with memory — flip-flops, latches, state machines (like OTP logic on your phone).</p>
+    </div>
+    <div class="card">
+      <h3>📦 Verilog Modules</h3>
+      <p>The building blocks of Verilog — ports, data-flow, gate types, operators, operands.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ HDL INTRO ══════════ -->
+<section id="hdl-intro">
+  <div class="sec-head">
+    <div class="label">Topic 1</div>
+    <h2>What Is HDL &amp; Verilog?</h2>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">📖</span>Hardware Description Language (HDL)</h3>
+    <p>An HDL is a programming language used to <strong>model electronic systems</strong>. Unlike C or Python that run on CPUs, HDL code describes the actual hardware that you want to <em>synthesise</em> (build) on a chip or FPGA.</p>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Indian Daily Life Analogy</div>
+    <p><strong>Think of Verilog like a house blueprint (naksha).</strong> When you ask an architect to build a 3BHK flat in Mumbai, you give them a blueprint — it describes every room, wire, and pipe. The builder (synthesis tool) then constructs the actual flat (chip). Verilog is that blueprint for digital circuits!</p>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🔧</span>Why Verilog?</h3>
+    <p>Verilog is the industry-standard HDL. It is used by companies like Intel, NVIDIA, Qualcomm (makers of chips in your Jio 5G phone) to design billions of logic gates. It has a C-like syntax, making it accessible for engineering students.</p>
+  </div>
+
+  <div class="info-box">
+    <div class="ib-icon">💡</div>
+    <p><strong>Did you know?</strong> The Snapdragon processor inside most Indian flagship smartphones (OnePlus, Redmi, Realme) was designed using Verilog HDL before being manufactured in TSMC's fab in Taiwan!</p>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🏗️</span>Levels of Abstraction in Verilog</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3>1. Gate Level (Structural)</h3>
+        <p>Describes the circuit using primitive gates: <code style="color:#a78bfa">and</code>, <code style="color:#a78bfa">or</code>, <code style="color:#a78bfa">not</code>, <code style="color:#a78bfa">nand</code>, <code style="color:#a78bfa">nor</code>, <code style="color:#a78bfa">xor</code>. Like building a LEGO model piece by piece.</p>
+      </div>
+      <div class="card">
+        <h3>2. Data-Flow (RTL)</h3>
+        <p>Describes how data flows using <code style="color:#a78bfa">assign</code> statements and expressions. Like writing the formula for a calculation.</p>
+      </div>
+      <div class="card">
+        <h3>3. Behavioural (Algorithmic)</h3>
+        <p>Describes circuit behaviour using <code style="color:#a78bfa">always</code> blocks and procedural statements. Closest to software programming.</p>
+      </div>
+      <div class="card">
+        <h3>4. Switch Level</h3>
+        <p>Describes circuits at the MOSFET transistor level — the most detailed, rarely used in typical design.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ STRUCTURAL ══════════ -->
+<section id="structural">
+  <div class="sec-head">
+    <div class="label">Topic 2</div>
+    <h2>Structural Models</h2>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🔌</span>Gate-Level Modelling</h3>
+    <p>Structural modelling involves connecting basic logic gates like a circuit diagram. You instantiate gates and connect them using <strong>nets (wires)</strong>.</p>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Daily Life Example – UPI Transaction Logic</div>
+    <p>Imagine a UPI payment: the transaction succeeds <strong>only if</strong> your balance is sufficient <strong>AND</strong> the internet is available <strong>AND</strong> the receiver's UPI ID is valid. This is a 3-input AND gate!</p>
+    <code>// UPI Success = Balance_OK AND Internet_OK AND UPI_ID_Valid
+and upi_gate(success, balance_ok, internet_ok, upi_valid);</code>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – 2-input AND Gate (Structural)</div>
+    <pre><span class="kw">module</span> and_gate (
+    <span class="kw">input</span>  A, B,
+    <span class="kw">output</span> Y
+);
+    <span class="kw">and</span> g1 (Y, A, B);  <span class="cm">// primitive gate instantiation</span>
+<span class="kw">endmodule</span></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – Half Adder (Structural)</div>
+    <pre><span class="kw">module</span> half_adder (
+    <span class="kw">input</span>  A, B,
+    <span class="kw">output</span> Sum, Carry
+);
+    <span class="kw">xor</span> g1 (Sum, A, B);    <span class="cm">// Sum = A XOR B</span>
+    <span class="kw">and</span> g2 (Carry, A, B);  <span class="cm">// Carry = A AND B</span>
+<span class="kw">endmodule</span></pre>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Half Adder Truth Table</div>
+    <p>Verifying the half adder — adding two single bits (like 1-bit processor flags):</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>A</th><th>B</th><th>Sum (A⊕B)</th><th>Carry (A·B)</th></tr>
+      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+      <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+      <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">📡</span>Gate Delays &amp; Propagation</h3>
+    <p>In real hardware, gates are NOT instant. Signal takes time to pass through a gate — called <strong>propagation delay</strong>. In Verilog, we model this using <code style="color:#a78bfa">#delay</code>.</p>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Example – WhatsApp Message Delay Analogy</div>
+    <p>When you send a WhatsApp message, it takes a small time to reach the server and then the recipient. Similarly, a signal through a NAND gate has a 2ns delay in real chips.</p>
+    <code>// Gate with propagation delay of 2 time units
+and #2 g1 (Y, A, B);  // output Y appears 2 units after A,B change</code>
+  </div>
+</section>
+
+<!-- ══════════ BEHAVIOURAL ══════════ -->
+<section id="behavioural">
+  <div class="sec-head">
+    <div class="label">Topic 3</div>
+    <h2>Behavioural Models &amp; Data-Flow</h2>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">💻</span>Data-Flow Modelling (assign statement)</h3>
+    <p>Describes circuits using Boolean expressions with the <code style="color:#a78bfa">assign</code> keyword. This models how data flows through the circuit continuously.</p>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – Half Adder (Data-Flow)</div>
+    <pre><span class="kw">module</span> half_adder_df (
+    <span class="kw">input</span>  A, B,
+    <span class="kw">output</span> Sum, Carry
+);
+    <span class="kw">assign</span> Sum   = A ^ B;   <span class="cm">// XOR → bitwise exclusive-or</span>
+    <span class="kw">assign</span> Carry = A &amp; B;   <span class="cm">// AND → bitwise and</span>
+<span class="kw">endmodule</span></pre>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🔄</span>Behavioural Modelling (always block)</h3>
+    <p>Uses <code style="color:#a78bfa">always</code> blocks with procedural statements. Can model both combinational and sequential circuits. Sensitive list controls when the block executes.</p>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Daily Life Example – Zomato Order Status</div>
+    <p>Your Zomato app always watches (<code>always @</code>) the order status. Whenever it changes (Placed → Accepted → Out for Delivery → Delivered), the app updates the UI. Similarly, <code>always @(A or B)</code> means "run this block whenever A or B changes."</p>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – 4:1 MUX (Behavioural)</div>
+    <pre><span class="kw">module</span> mux4to1 (
+    <span class="kw">input</span>  [<span class="num">3</span>:<span class="num">0</span>] D,      <span class="cm">// 4 data inputs</span>
+    <span class="kw">input</span>  [<span class="num">1</span>:<span class="num">0</span>] SEL,    <span class="cm">// 2-bit select</span>
+    <span class="kw">output reg</span>  Y
+);
+    <span class="kw">always</span> @(D <span class="kw">or</span> SEL) <span class="kw">begin</span>
+        <span class="kw">case</span> (SEL)
+            <span class="num">2'b00</span>: Y = D[<span class="num">0</span>];
+            <span class="num">2'b01</span>: Y = D[<span class="num">1</span>];
+            <span class="num">2'b10</span>: Y = D[<span class="num">2</span>];
+            <span class="num">2'b11</span>: Y = D[<span class="num">3</span>];
+        <span class="kw">endcase</span>
+    <span class="kw">end</span>
+<span class="kw">endmodule</span></pre>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">MUX Analogy – DTH Set-Top Box Channel Selector</div>
+    <p>A 4:1 MUX is like your Tata Sky / Airtel DTH remote: you have 4 incoming channels (inputs D0–D3), and the channel number buttons (SEL) select which one appears on your TV screen (output Y). Only one channel is displayed at a time!</p>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🧩</span>Continuous vs. Procedural Assignment</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3>Continuous (assign)</h3>
+        <p>Always active. Used for combinational logic. Output updates automatically whenever any input changes.</p>
+        <code style="color:#86efac;font-family:'JetBrains Mono';font-size:.82rem">assign Y = A & B;</code>
+      </div>
+      <div class="card">
+        <h3>Procedural (always)</h3>
+        <p>Executes when triggered by sensitivity list. Used for both combinational and sequential logic.</p>
+        <code style="color:#86efac;font-family:'JetBrains Mono';font-size:.82rem">always @(posedge clk)</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SEQUENTIAL ══════════ -->
+<section id="sequential">
+  <div class="sec-head">
+    <div class="label">Topic 4</div>
+    <h2>Sequential Logic Basics</h2>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">⏱️</span>What is Sequential Logic?</h3>
+    <p>Sequential circuits have <strong>memory</strong> — the output depends not just on current inputs, but also on <em>past history</em>. They are driven by a <strong>clock signal</strong>.</p>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Example – ATM PIN Entry</div>
+    <p>When you enter your SBI ATM PIN, the machine remembers each digit you pressed (it stores state). After 4 digits, it checks the sequence. This is exactly how a sequential FSM (Finite State Machine) works — it remembers what happened before!</p>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🔁</span>D Flip-Flop – The Basic Memory Cell</h3>
+    <p>A D flip-flop captures the value of input D on the <strong>rising edge</strong> of the clock and holds it until the next clock edge.</p>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – D Flip-Flop (Behavioural)</div>
+    <pre><span class="kw">module</span> d_ff (
+    <span class="kw">input</span>  D, clk, rst,
+    <span class="kw">output reg</span> Q
+);
+    <span class="kw">always</span> @(<span class="kw">posedge</span> clk <span class="kw">or</span> <span class="kw">posedge</span> rst) <span class="kw">begin</span>
+        <span class="kw">if</span> (rst)
+            Q &lt;= <span class="num">1'b0</span>;  <span class="cm">// synchronous reset</span>
+        <span class="kw">else</span>
+            Q &lt;= D;     <span class="cm">// capture D on rising clock edge</span>
+    <span class="kw">end</span>
+<span class="kw">endmodule</span></pre>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">D Flip-Flop – IRCTC Ticket Booking Analogy</div>
+    <p>In IRCTC tatkal booking at 10:00 AM exactly: the moment the clock "ticks" to 10:00 (rising edge), whatever the system was holding (train & class selected = D input) gets confirmed into your booking (Q output) and held until you cancel. That's a D flip-flop!</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>clk (edge)</th><th>rst</th><th>D</th><th>Q (next)</th></tr>
+      <tr><td>↑ Rising</td><td>1</td><td>X</td><td>0 (Reset)</td></tr>
+      <tr><td>↑ Rising</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>↑ Rising</td><td>0</td><td>1</td><td>1</td></tr>
+      <tr><td>No edge</td><td>X</td><td>X</td><td>Q (hold)</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════ MODULES ══════════ -->
+<section id="modules">
+  <div class="sec-head">
+    <div class="label">Topic 5</div>
+    <h2>Verilog Modules &amp; Ports</h2>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">📦</span>Module Structure</h3>
+    <p>A <strong>module</strong> is the fundamental building block of Verilog. Every design starts with <code style="color:#f472b6">module</code> and ends with <code style="color:#f472b6">endmodule</code>. Ports define the interface (inputs/outputs).</p>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – Module Anatomy</div>
+    <pre><span class="kw">module</span> module_name (port_list);  <span class="cm">// declaration</span>
+
+    <span class="cm">// 1. Port declarations</span>
+    <span class="kw">input</span>  wire A, B;       <span class="cm">// input ports</span>
+    <span class="kw">output</span> wire Y;          <span class="cm">// output port</span>
+    <span class="kw">inout</span>  wire Z;          <span class="cm">// bidirectional (e.g. I2C bus)</span>
+
+    <span class="cm">// 2. Internal signals</span>
+    <span class="kw">wire</span>  temp;             <span class="cm">// internal net</span>
+    <span class="kw">reg</span>   count;            <span class="cm">// register (holds value)</span>
+
+    <span class="cm">// 3. Logic (structural / data-flow / behavioural)</span>
+    <span class="kw">assign</span> Y = A &amp; B;
+
+<span class="kw">endmodule</span></pre>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Example – Smartphone as a Module</div>
+    <p>Your Redmi smartphone is a module:
+    <br>• <strong>Inputs:</strong> touchscreen, mic, camera, USB-C charger
+    <br>• <strong>Outputs:</strong> speaker, display, vibration motor
+    <br>• <strong>Internal registers:</strong> RAM, storage (holds data)
+    <br>• <strong>Logic:</strong> the processor running MIUI (the always block!)
+    </p>
+  </div>
+
+  <div class="concept">
+    <h3><span class="icon">🔗</span>Module Instantiation</h3>
+    <p>A module can be used inside another module — called <strong>instantiation</strong>. Like reusing a standard LEGO block in multiple builds.</p>
+  </div>
+
+  <div class="codeblock">
+    <div class="cb-head">⚡ Verilog – Full Adder using 2 Half Adders</div>
+    <pre><span class="kw">module</span> full_adder (
+    <span class="kw">input</span>  A, B, Cin,
+    <span class="kw">output</span> Sum, Cout
+);
+    <span class="kw">wire</span> s1, c1, c2;
+
+    <span class="cm">// Instantiate half adder modules</span>
+    half_adder HA1 (.A(A),  .B(B),   .Sum(s1), .Carry(c1));
+    half_adder HA2 (.A(s1), .B(Cin), .Sum(Sum),.Carry(c2));
+
+    <span class="kw">or</span> g1 (Cout, c1, c2);
+<span class="kw">endmodule</span></pre>
+  </div>
+</section>
+
+<!-- ══════════ OPERATORS ══════════ -->
+<section id="operators">
+  <div class="sec-head">
+    <div class="label">Topic 6</div>
+    <h2>Operators, Operands &amp; Data Types</h2>
+  </div>
+
+  <div class="grid2">
+    <div class="concept">
+      <h3><span class="icon">🔢</span>Data Types</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Type</th><th>Use</th><th>Example</th></tr>
+          <tr><td><code style="color:#a78bfa">wire</code></td><td>Nets/connections</td><td>wire Y;</td></tr>
+          <tr><td><code style="color:#a78bfa">reg</code></td><td>Holds value in always</td><td>reg Q;</td></tr>
+          <tr><td><code style="color:#a78bfa">integer</code></td><td>Integer loops</td><td>integer i;</td></tr>
+          <tr><td><code style="color:#a78bfa">parameter</code></td><td>Constants</td><td>parameter N=8;</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="concept">
+      <h3><span class="icon">⚙️</span>Number Format</h3>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:.6rem">Format: <code style="color:#f472b6">size'base value</code></p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Example</th><th>Meaning</th></tr>
+          <tr><td><code style="color:#86efac">4'b1010</code></td><td>4-bit binary 10</td></tr>
+          <tr><td><code style="color:#86efac">8'hFF</code></td><td>8-bit hex 255</td></tr>
+          <tr><td><code style="color:#86efac">8'd200</code></td><td>8-bit decimal 200</td></tr>
+          <tr><td><code style="color:#86efac">1'b0</code></td><td>1-bit binary 0</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept" style="margin-top:1.2rem">
+    <h3><span class="icon">➕</span>Operators in Verilog</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Category</th><th>Operators</th><th>Example</th><th>Result</th></tr>
+        <tr><td>Bitwise</td><td>&amp; | ^ ~ ^~</td><td>4'b1010 &amp; 4'b1100</td><td>4'b1000</td></tr>
+        <tr><td>Logical</td><td>&amp;&amp; || !</td><td>1 &amp;&amp; 0</td><td>0</td></tr>
+        <tr><td>Reduction</td><td>&amp;A |A ^A</td><td>&amp;4'b1111</td><td>1</td></tr>
+        <tr><td>Relational</td><td>== != &gt; &lt; &gt;= &lt;=</td><td>A == B</td><td>1 or 0</td></tr>
+        <tr><td>Shift</td><td>&lt;&lt; &gt;&gt;</td><td>4'b0001 &lt;&lt; 2</td><td>4'b0100</td></tr>
+        <tr><td>Arithmetic</td><td>+ - * / %</td><td>3 + 5</td><td>8</td></tr>
+        <tr><td>Conditional</td><td>? :</td><td>SEL ? A : B</td><td>A if SEL=1</td></tr>
+        <tr><td>Concatenation</td><td>{ }</td><td>{A,B} A=1,B=0</td><td>2'b10</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="example">
+    <div class="ex-tag">Operators – Phone Battery Analogy</div>
+    <p>
+    • <strong>Conditional operator</strong>: Your phone shows "Low Battery" warning — <code>battery &lt; 20 ? red_icon : green_icon</code><br>
+    • <strong>Shift left (&lt;&lt;)</strong>: Doubling a value is like switching from 4G to 5G — double the speed, same data.<br>
+    • <strong>Concatenation {}</strong>: Like merging two Jio SIM contacts lists into one phone book.
+    </p>
+  </div>
+</section>
+</div><!-- /container -->
+
+<!-- ══════════ MCQ SECTION ══════════ -->
+<div style="background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);border-top:1px solid var(--border);">
+<div class="container">
+<section class="mcq-section" id="mcq">
+  <div class="mcq-header">
+    <div class="sec-head" style="text-align:center">
+      <div class="label" style="justify-content:center">Practice Zone</div>
+      <h2 style="-webkit-text-fill-color:unset;background:none;color:#f59e0b">🎯 20 MCQs – Test Yourself!</h2>
+    </div>
+    <p style="color:var(--muted);font-size:.9rem">Click an option to answer. Instant feedback with explanations!</p>
+    <div class="mcq-counter">
+      <span>⏱️ Take your time</span>
+      <span id="answered-count">0 / 20 answered</span>
+      <span id="correct-count">✅ 0 correct</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  </div>
+
+  <div id="score-board">
+    <h3 id="score-text">Your Score: 0/20</h3>
+    <p id="score-msg">Keep practicing — you've got this! 💪</p>
+  </div>
+
+  <div id="mcq-container"></div>
+
+  <div class="mcq-controls">
+    <button class="btn btn-primary" onclick="submitQuiz()">Submit &amp; See Score</button>
+    <button class="btn btn-secondary" onclick="resetQuiz()">Reset Quiz</button>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- ══════════ SHORT QA ══════════ -->
+<div class="container">
+<section class="qa-section" id="short-qa">
+  <div class="sec-head">
+    <div class="label">Short Answer Questions</div>
+    <h2>📝 10 Short Questions with Answers</h2>
+  </div>
+  <p style="color:var(--muted);margin-bottom:1.5rem;font-size:.9rem">Click on any question to reveal the answer. Ideal for 2–3 mark questions.</p>
+  <div id="short-qa-container"></div>
+</section>
+
+<!-- ══════════ LONG QA ══════════ -->
+<section class="qa-section" id="long-qa">
+  <div class="sec-head">
+    <div class="label">Long Answer Questions</div>
+    <h2>📚 10 Long Questions with Detailed Answers</h2>
+  </div>
+  <p style="color:var(--muted);margin-bottom:1.5rem;font-size:.9rem">Click to expand. These cover 5–10 mark university questions.</p>
+  <div id="long-qa-container"></div>
+</section>
+</div>
+
+<footer>
+  <p>Chapter 1 · System Design using Verilog &nbsp;|&nbsp; <span>Second Year Electronics Engineering</span></p>
+  <p style="margin-top:.4rem;color:#64748b;">Dept. of Electronics Engineering (VLSI D&amp;T) · 2AF13/5PC412</p>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+// MCQ DATA
+// ─────────────────────────────────────────────
+const mcqs = [
+  {
+    q: "What does HDL stand for in the context of digital design?",
+    opts: ["High Definition Language","Hardware Description Language","Hardware Design Logic","High-level Data Language"],
+    ans: 1,
+    exp: "HDL stands for Hardware Description Language — used to model electronic circuits (e.g., Verilog, VHDL)."
+  },
+  {
+    q: "Which keyword is used to declare the beginning of a module in Verilog?",
+    opts: ["begin","start","module","define"],
+    ans: 2,
+    exp: "'module' keyword starts a Verilog module definition, and 'endmodule' ends it."
+  },
+  {
+    q: "In Verilog, which of the following is a net (connection) type?",
+    opts: ["reg","integer","wire","real"],
+    ans: 2,
+    exp: "'wire' is the net data type in Verilog. 'reg' holds a value in procedural blocks."
+  },
+  {
+    q: "What does 4'b1010 represent in Verilog?",
+    opts: ["Decimal 10","Hex 1010","4-bit binary value 1010 (decimal 10)","Octal 1010"],
+    ans: 2,
+    exp: "4'b1010 means: size=4 bits, base=binary, value=1010 which equals decimal 10."
+  },
+  {
+    q: "Which modelling style uses the 'assign' keyword in Verilog?",
+    opts: ["Gate-level modelling","Behavioural modelling","Data-flow modelling","Switch-level modelling"],
+    ans: 2,
+    exp: "Data-flow (RTL) modelling uses 'assign' for continuous assignments. e.g., assign Y = A & B;"
+  },
+  {
+    q: "A D flip-flop captures input D on which clock event?",
+    opts: ["Falling edge","High level","Rising (positive) edge","Any change"],
+    ans: 2,
+    exp: "Standard D flip-flop is triggered on the rising (positive) edge: always @(posedge clk)"
+  },
+  {
+    q: "What is the output of the Verilog expression: &4'b1111?",
+    opts: ["0","1","1111","4"],
+    ans: 1,
+    exp: "The reduction AND (&) of 4'b1111 = 1&1&1&1 = 1. It's 1 only when ALL bits are 1."
+  },
+  {
+    q: "Which primitive gate is used in Verilog to implement XOR?",
+    opts: ["xnor","xor","or","nor"],
+    ans: 1,
+    exp: "'xor' is the Verilog primitive gate. Usage: xor g1(Y, A, B);"
+  },
+  {
+    q: "In Verilog, the 'always' block is triggered by:",
+    opts: ["The module keyword","Events in the sensitivity list","The assign keyword","The parameter list"],
+    ans: 1,
+    exp: "The always block executes whenever any signal in its sensitivity list changes. e.g., always @(A or B)"
+  },
+  {
+    q: "Which operator is used for bit concatenation in Verilog?",
+    opts: ["( )","[ ]","{ }","< >"],
+    ans: 2,
+    exp: "Curly braces {} are used for concatenation. e.g., {A, B} combines two signals."
+  },
+  {
+    q: "What is the Boolean expression for the Sum output of a Half Adder?",
+    opts: ["A AND B","A OR B","A XOR B","A XNOR B"],
+    ans: 2,
+    exp: "Sum = A ⊕ B (XOR). Carry = A · B (AND). This is the definition of a half adder."
+  },
+  {
+    q: "In Verilog, 'posedge' refers to:",
+    opts: ["Positive voltage level","Falling edge of a signal","Rising edge of a signal","Any edge of a signal"],
+    ans: 2,
+    exp: "'posedge clk' means positive (rising) edge of the clock — when clock goes from 0 to 1."
+  },
+  {
+    q: "Which of the following correctly describes 'structural modelling' in Verilog?",
+    opts: ["Describing circuit behaviour using always blocks","Connecting gate primitives and modules using wires","Writing equations using assign keyword","Defining FSM state transitions"],
+    ans: 1,
+    exp: "Structural modelling uses instantiated gate primitives (and, or, not, xor) connected by wires."
+  },
+  {
+    q: "The 'parameter' keyword in Verilog is used to define:",
+    opts: ["Input ports","Register variables","Named constants","Clock signals"],
+    ans: 2,
+    exp: "parameter N = 8; defines a constant N with value 8. It cannot be changed during simulation."
+  },
+  {
+    q: "A 4:1 MUX has how many select lines?",
+    opts: ["1","2","3","4"],
+    ans: 1,
+    exp: "A 4:1 MUX needs 2 select lines (2² = 4 combinations to choose from 4 inputs)."
+  },
+  {
+    q: "What is the result of 4'b0001 << 2 in Verilog?",
+    opts: ["4'b0001","4'b0010","4'b0100","4'b1000"],
+    ans: 2,
+    exp: "Left shift by 2: 0001 → 0010 → 0100. Shift left by N = multiply by 2^N."
+  },
+  {
+    q: "Which statement about 'wire' and 'reg' in Verilog is CORRECT?",
+    opts: ["Both can be driven inside always blocks","wire is driven by assign or gate outputs; reg holds value in always/initial blocks","reg cannot store sequential values","wire can only be used in test benches"],
+    ans: 1,
+    exp: "'wire' is for continuous connections (assign/gates). 'reg' stores values in procedural always blocks."
+  },
+  {
+    q: "Propagation delay in Verilog is specified using:",
+    opts: ["@delay","#delay","*delay","%delay"],
+    ans: 1,
+    exp: "Propagation delay uses #. Example: and #2 g1(Y, A, B); — output Y delayed by 2 time units."
+  },
+  {
+    q: "What does the conditional operator 'SEL ? A : B' mean in Verilog?",
+    opts: ["AND of SEL, A, B","If SEL=1 output A, else output B","If A=1 output SEL, else output B","XOR of all three"],
+    ans: 1,
+    exp: "The ternary operator: condition ? value_if_true : value_if_false. Same as C language."
+  },
+  {
+    q: "In a Full Adder, how many half adder modules and OR gates are needed?",
+    opts: ["1 HA + 1 OR","2 HA + 1 OR","2 HA + 2 OR","3 HA + 1 OR"],
+    ans: 1,
+    exp: "Full Adder = 2 Half Adders + 1 OR gate. The OR combines the two carry outputs (c1 | c2)."
+  }
+];
+
+// ─────────────────────────────────────────────
+// SHORT QA DATA
+// ─────────────────────────────────────────────
+const shortQA = [
+  {
+    q: "What is Verilog? State its role in digital design.",
+    a: `<strong>Verilog</strong> is a Hardware Description Language (HDL) used to model, simulate, and synthesise digital circuits. Its role includes:<ul><li>Describing combinational and sequential circuits at various abstraction levels</li><li>Enabling simulation before physical fabrication (saving cost)</li><li>Used in ASIC and FPGA design flows by companies like Intel and Qualcomm</li></ul>`
+  },
+  {
+    q: "What is the difference between 'wire' and 'reg' data types in Verilog?",
+    a: `<strong>wire</strong>: Represents a physical connection (net). Driven continuously by assign statements or gate outputs. Cannot store values.<br><br><strong>reg</strong>: Holds a value in procedural blocks (always/initial). Used for sequential elements like flip-flops. Despite the name, it doesn't always synthesise as a register.`
+  },
+  {
+    q: "Write the Verilog code for a 2-input AND gate using gate-level modelling.",
+    a: `<strong>Gate-level (structural) model:</strong><br><br><code style="font-family:'JetBrains Mono';color:#86efac;font-size:.85rem">module and_gate(input A, B, output Y);<br>&nbsp;&nbsp;&nbsp;&nbsp;and g1(Y, A, B);<br>endmodule</code><br><br>Here, <code>and</code> is a Verilog primitive gate and <code>g1</code> is the instance name.`
+  },
+  {
+    q: "What is a sensitivity list in Verilog? Give an example.",
+    a: `The <strong>sensitivity list</strong> is the list of signals after <code>@</code> that trigger execution of the always block.<br><br>Example: <code>always @(A or B or C)</code> — this block runs whenever A, B, or C changes.<br><br>For sequential circuits: <code>always @(posedge clk)</code> — triggers only on clock's rising edge.`
+  },
+  {
+    q: "What is propagation delay? How is it modelled in Verilog?",
+    a: `<strong>Propagation delay</strong> is the time taken for a signal change at the input to appear at the output of a gate.<br><br>In Verilog, it is modelled using <code>#delay</code> notation:<br><code style="font-family:'JetBrains Mono';color:#86efac">and #5 g1(Y, A, B);</code><br><br>This means the output Y changes 5 time units after A or B changes.`
+  },
+  {
+    q: "What is the difference between combinational and sequential circuits?",
+    a: `<strong>Combinational Circuit:</strong> Output depends only on present inputs. No memory. Examples: adder, MUX, decoder.<br><br><strong>Sequential Circuit:</strong> Output depends on present inputs AND past history (stored state). Has memory elements (flip-flops). Examples: counters, registers, FSMs.`
+  },
+  {
+    q: "Write the Verilog assign statement for a 2:1 MUX.",
+    a: `<code style="font-family:'JetBrains Mono';color:#86efac">assign Y = SEL ? A : B;</code><br><br>This means: if SEL=1, output Y = A; if SEL=0, output Y = B.<br>This uses the conditional (ternary) operator and represents data-flow modelling.`
+  },
+  {
+    q: "What are the four logic values in Verilog?",
+    a: `Verilog uses a <strong>4-value logic system</strong>:<ul><li><strong>0</strong>: Logic Low / False</li><li><strong>1</strong>: Logic High / True</li><li><strong>x</strong>: Unknown value (both 0 and 1 possible — used at startup)</li><li><strong>z</strong>: High impedance (disconnected wire — used in tri-state buffers)</li></ul>`
+  },
+  {
+    q: "What is module instantiation in Verilog?",
+    a: `<strong>Module instantiation</strong> is the process of using one module inside another, like calling a function. Example: A Full Adder instantiates two Half Adder modules.<br><br><code style="font-family:'JetBrains Mono';color:#86efac">half_adder HA1(.A(A), .B(B), .Sum(s1), .Carry(c1));</code><br><br>Here <code>HA1</code> is the instance name, and connections are made by name using dot notation.`
+  },
+  {
+    q: "State the truth table and Verilog code for an XOR gate.",
+    a: `<strong>Truth Table:</strong><br>A=0,B=0 → Y=0 | A=0,B=1 → Y=1 | A=1,B=0 → Y=1 | A=1,B=1 → Y=0<br><br><strong>Code:</strong><br><code style="font-family:'JetBrains Mono';color:#86efac">module xor_gate(input A, B, output Y);<br>&nbsp;&nbsp;&nbsp;&nbsp;xor g1(Y, A, B);<br>endmodule</code><br><br>Data-flow: <code style="font-family:'JetBrains Mono';color:#86efac">assign Y = A ^ B;</code>`
+  }
+];
+
+// ─────────────────────────────────────────────
+// LONG QA DATA
+// ─────────────────────────────────────────────
+const longQA = [
+  {
+    q: "Explain the different levels of abstraction in Verilog with examples.",
+    a: `Verilog supports four levels of abstraction for modelling digital circuits:<br><br>
+    <strong>1. Switch Level (Transistor Level):</strong> Models individual NMOS/PMOS transistors. Highest detail, rarely used. Used for standard cell library development.<br><br>
+    <strong>2. Gate Level (Structural):</strong> Uses primitive gates (and, or, not, xor, nand, nor). Describes the circuit as an interconnection of logic gates. Example: <code>and g1(Y, A, B);</code> This is produced by synthesis tools.<br><br>
+    <strong>3. Data-Flow (RTL – Register Transfer Level):</strong> Describes data movement using assign statements. Example: <code>assign Sum = A ^ B; assign Carry = A & B;</code> Suitable for combinational logic description.<br><br>
+    <strong>4. Behavioural (Algorithmic):</strong> Describes what the circuit does using always blocks, if-else, case statements. Closest to software. Example:<br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">always @(SEL or A or B) begin<br>&nbsp;&nbsp;if(SEL) Y = A; else Y = B;<br>end</code><br><br>
+    <strong>Choosing the right level:</strong> Higher abstraction = easier to write, less hardware control. Lower abstraction = more control, more code. Modern digital design uses RTL and Behavioural levels, with synthesis tools converting to gate level.`
+  },
+  {
+    q: "Describe structural modelling in Verilog. Write the complete Verilog code for a Full Adder using two Half Adders.",
+    a: `<strong>Structural Modelling</strong> describes a circuit by specifying its components (gates/modules) and the wires connecting them — similar to drawing a circuit diagram in code.<br><br>
+    <strong>Key concepts:</strong><ul><li>Modules are instantiated with unique instance names</li><li>Ports are connected using positional or named association</li><li>Internal connections use wire declarations</li></ul>
+    <strong>Half Adder Module:</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">module half_adder(input A, B, output Sum, Carry);<br>&nbsp;&nbsp;xor g1(Sum, A, B);<br>&nbsp;&nbsp;and g2(Carry, A, B);<br>endmodule</code><br><br>
+    <strong>Full Adder using 2 Half Adders + 1 OR gate:</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">module full_adder(input A, B, Cin, output Sum, Cout);<br>&nbsp;&nbsp;wire s1, c1, c2;<br>&nbsp;&nbsp;half_adder HA1(.A(A), .B(B), .Sum(s1), .Carry(c1));<br>&nbsp;&nbsp;half_adder HA2(.A(s1), .B(Cin), .Sum(Sum), .Carry(c2));<br>&nbsp;&nbsp;or g1(Cout, c1, c2);<br>endmodule</code><br><br>
+    <strong>Truth Table verification (A=1, B=1, Cin=1):</strong> HA1: s1=0, c1=1. HA2: Sum=1, c2=0. Cout = 1|0 = 1. So Sum=1, Cout=1 ✓ (1+1+1=11 in binary).`
+  },
+  {
+    q: "Explain behavioural modelling in Verilog with examples of combinational circuits.",
+    a: `<strong>Behavioural modelling</strong> describes a circuit's function (behaviour) using procedural code, without specifying gates. It uses the <code>always</code> block.<br><br>
+    <strong>Key constructs:</strong><ul><li><code>always @(sensitivity list)</code> — triggers on signal changes</li><li><code>if-else</code> — conditional logic</li><li><code>case</code> — multi-way selection</li><li><code>reg</code> — required for outputs assigned in always blocks</li></ul>
+    <strong>Example 1 – 2:1 MUX (Behavioural):</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">module mux2to1(input A, B, SEL, output reg Y);<br>&nbsp;&nbsp;always @(A or B or SEL)<br>&nbsp;&nbsp;&nbsp;&nbsp;if(SEL) Y = A; else Y = B;<br>endmodule</code><br><br>
+    <strong>Example 2 – 4:1 MUX using case:</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">always @(D or SEL) begin<br>&nbsp;&nbsp;case(SEL)<br>&nbsp;&nbsp;&nbsp;&nbsp;2'b00: Y=D[0]; 2'b01: Y=D[1];<br>&nbsp;&nbsp;&nbsp;&nbsp;2'b10: Y=D[2]; 2'b11: Y=D[3];<br>&nbsp;&nbsp;endcase<br>end</code><br><br>
+    <strong>Combinational always block rules:</strong><ul><li>All inputs must be in sensitivity list</li><li>All outputs must have defined values for all conditions (to avoid latches)</li><li>Use blocking assignments (=) for combinational</li></ul>`
+  },
+  {
+    q: "Explain D Flip-Flop with synchronous reset in Verilog. Draw the timing diagram.",
+    a: `A <strong>D Flip-Flop</strong> is the most fundamental sequential element. It samples input D on the active clock edge and stores it in Q.<br><br>
+    <strong>Verilog Code (Synchronous Reset):</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">module d_ff_sync(input D, clk, rst, output reg Q);<br>&nbsp;&nbsp;always @(posedge clk)<br>&nbsp;&nbsp;&nbsp;&nbsp;if(rst) Q <= 0;<br>&nbsp;&nbsp;&nbsp;&nbsp;else Q <= D;<br>endmodule</code><br><br>
+    <strong>Asynchronous Reset (reset can happen anytime):</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">always @(posedge clk or posedge rst)<br>&nbsp;&nbsp;if(rst) Q <= 0;<br>&nbsp;&nbsp;else Q <= D;</code><br><br>
+    <strong>Timing Diagram:</strong><br>
+    <ul><li>At each rising edge of clk, Q samples whatever D was just before</li><li>With synchronous reset: rst is checked ONLY at rising edge</li><li>With asynchronous reset: rst immediately forces Q=0 regardless of clock</li></ul>
+    <strong>Non-blocking assignment (&lt;=)</strong> must be used in clocked always blocks to correctly model flip-flop behaviour and avoid race conditions.`
+  },
+  {
+    q: "Describe the complete structure of a Verilog module with all its components. Give an example.",
+    a: `A <strong>Verilog module</strong> has these components:<br><br>
+    <strong>1. Module Declaration:</strong> <code>module name (port_list);</code><br>
+    <strong>2. Port Declarations:</strong> Defines input, output, inout with direction and width<br>
+    <strong>3. Parameter Declarations:</strong> Named constants using <code>parameter</code><br>
+    <strong>4. Internal Signals:</strong> Wire and reg declarations for internal use<br>
+    <strong>5. Functionality:</strong> Structural (gates), data-flow (assign), or behavioural (always)<br>
+    <strong>6. End:</strong> <code>endmodule</code><br><br>
+    <strong>Complete Example – 4-bit Register:</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.8rem;color:#86efac">module reg4bit #(parameter N=4) (<br>&nbsp;&nbsp;input [N-1:0] D,<br>&nbsp;&nbsp;input clk, rst,<br>&nbsp;&nbsp;output reg [N-1:0] Q<br>);<br>&nbsp;&nbsp;// Internal signal<br>&nbsp;&nbsp;wire load_en;<br>&nbsp;&nbsp;assign load_en = ~rst;<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;always @(posedge clk)<br>&nbsp;&nbsp;&nbsp;&nbsp;if(rst) Q <= 4'b0000;<br>&nbsp;&nbsp;&nbsp;&nbsp;else Q <= D;<br>endmodule</code><br><br>
+    The <code>#(parameter N=4)</code> makes this parameterised — reusable for 8-bit or 16-bit registers by changing N.`
+  },
+  {
+    q: "Explain all Verilog operators with examples for each category.",
+    a: `<strong>1. Bitwise Operators</strong> (bit-by-bit operations):<br>
+    <code>&amp;</code> (AND), <code>|</code> (OR), <code>^</code> (XOR), <code>~</code> (NOT), <code>~^</code> (XNOR)<br>
+    Example: <code>4'b1010 & 4'b1100 = 4'b1000</code><br><br>
+    <strong>2. Logical Operators</strong> (returns 1-bit result):<br>
+    <code>&amp;&amp;</code> (AND), <code>||</code> (OR), <code>!</code> (NOT)<br>
+    Example: <code>1 && 0 = 0</code><br><br>
+    <strong>3. Reduction Operators</strong> (reduces multi-bit to 1 bit):<br>
+    <code>&amp;A</code>, <code>|A</code>, <code>^A</code><br>
+    Example: <code>&4'b1011 = 1&0&1&1 = 0</code><br><br>
+    <strong>4. Relational:</strong> <code>==, !=, >, <, >=, <=</code> — returns 0 or 1<br><br>
+    <strong>5. Shift:</strong> <code><<</code> left (×2), <code>>></code> right (÷2)<br>
+    Example: <code>4'b0001 << 3 = 4'b1000</code> (=8)<br><br>
+    <strong>6. Arithmetic:</strong> <code>+, -, *, /, %</code><br><br>
+    <strong>7. Conditional:</strong> <code>cond ? val_true : val_false</code><br>
+    Used to model MUX: <code>assign Y = SEL ? A : B;</code><br><br>
+    <strong>8. Concatenation {} and Replication {{}}:</strong><br>
+    <code>{A, B}</code> = join bits. <code>{4{1'b1}}</code> = 4'b1111<br><br>
+    <strong>Operator precedence</strong> (high to low): Unary → Arithmetic → Shift → Relational → Equality → Bitwise → Logical → Conditional`
+  },
+  {
+    q: "What is logic simulation and design verification in Verilog? Explain with a testbench example.",
+    a: `<strong>Logic Simulation</strong> is the process of testing a Verilog design virtually, before fabricating it on actual hardware. A <strong>testbench</strong> is a separate Verilog module that provides stimulus (inputs) to the design under test (DUT) and checks outputs.<br><br>
+    <strong>Testbench structure:</strong><ul><li>No ports (it's self-contained)</li><li>Instantiates the DUT</li><li>Uses <code>initial</code> block for stimulus</li><li>Uses <code>$monitor</code> or <code>$display</code> to observe outputs</li><li>Uses <code>#delay</code> for timing</li></ul>
+    <strong>Testbench for Half Adder:</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.8rem;color:#86efac">module tb_half_adder;<br>&nbsp;&nbsp;reg A, B;<br>&nbsp;&nbsp;wire Sum, Carry;<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;half_adder DUT(.A(A),.B(B),.Sum(Sum),.Carry(Carry));<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;initial begin<br>&nbsp;&nbsp;&nbsp;&nbsp;$monitor("A=%b B=%b Sum=%b Carry=%b",A,B,Sum,Carry);<br>&nbsp;&nbsp;&nbsp;&nbsp;A=0;B=0; #10;<br>&nbsp;&nbsp;&nbsp;&nbsp;A=0;B=1; #10;<br>&nbsp;&nbsp;&nbsp;&nbsp;A=1;B=0; #10;<br>&nbsp;&nbsp;&nbsp;&nbsp;A=1;B=1; #10;<br>&nbsp;&nbsp;&nbsp;&nbsp;$finish;<br>&nbsp;&nbsp;end<br>endmodule</code><br><br>
+    <strong>Design verification</strong> ensures the design meets specifications using truth table comparison, timing checks, and functional coverage.`
+  },
+  {
+    q: "Explain gate-level modelling with all built-in Verilog primitive gates and their truth tables.",
+    a: `Verilog provides <strong>12 built-in gate primitives</strong> that map directly to logic gates.<br><br>
+    <strong>Basic Gates:</strong><ul>
+    <li><code>and(Y,A,B)</code> — Y=A·B</li>
+    <li><code>or(Y,A,B)</code> — Y=A+B</li>
+    <li><code>not(Y,A)</code> — Y=Ā</li>
+    <li><code>nand(Y,A,B)</code> — Y=̄(A·B)</li>
+    <li><code>nor(Y,A,B)</code> — Y=̄(A+B)</li>
+    <li><code>xor(Y,A,B)</code> — Y=A⊕B</li>
+    <li><code>xnor(Y,A,B)</code> — Y=̄(A⊕B)</li></ul>
+    <strong>Buffer Gates:</strong><ul>
+    <li><code>buf(Y,A)</code> — Y=A (strengthens signal)</li>
+    <li><code>bufif1(Y,A,EN)</code> — tri-state buffer, active high</li>
+    <li><code>bufif0(Y,A,EN)</code> — tri-state buffer, active low</li></ul>
+    <strong>Example – 4-input NAND:</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">nand g1(Y, A, B, C, D); // Y = ~(A&B&C&D)</code><br><br>
+    <strong>Multiple outputs (not gate):</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">not g1(Y1, Y2, A); // both Y1 and Y2 = ~A</code><br><br>
+    Gate primitives form the basis of netlist representation — the output of synthesis tools.`
+  },
+  {
+    q: "Describe data-flow modelling in Verilog. Implement a 4-bit binary adder using data-flow style.",
+    a: `<strong>Data-flow modelling</strong> uses the <code>assign</code> statement for continuous assignment. It expresses Boolean equations that describe how data flows and transforms through the circuit.<br><br>
+    <strong>Key features:</strong><ul>
+    <li>Uses <code>assign</code> keyword — always active</li>
+    <li>Right-hand side expression re-evaluated whenever any operand changes</li>
+    <li>Models combinational logic elegantly</li>
+    <li>Supports all Verilog operators</li></ul>
+    <strong>4-bit Ripple Carry Adder (Data-flow):</strong><br>
+    <code style="font-family:'JetBrains Mono';font-size:.8rem;color:#86efac">module adder4bit(<br>&nbsp;&nbsp;input [3:0] A, B,<br>&nbsp;&nbsp;input Cin,<br>&nbsp;&nbsp;output [3:0] Sum,<br>&nbsp;&nbsp;output Cout<br>);<br>&nbsp;&nbsp;assign {Cout, Sum} = A + B + Cin;<br>endmodule</code><br><br>
+    The <code>{Cout, Sum}</code> is concatenation — Cout is the 5th bit (carry out) and Sum is the lower 4 bits.<br><br>
+    <strong>Example: A=4'b0101 (5), B=4'b0011 (3), Cin=1</strong><br>
+    Result = 5+3+1 = 9 = 5'b01001 → Cout=0, Sum=4'b1001 ✓`
+  },
+  {
+    q: "Explain the concept of continuous assignment vs procedural assignment in Verilog with comparison.",
+    a: `<strong>Continuous Assignment (assign):</strong><br>
+    Uses the <code>assign</code> keyword. The output is always active — whenever the right-hand side changes, the left-hand side updates immediately. Used ONLY for wire types.<br>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">assign Y = A & B; // Y updates whenever A or B changes</code><br><br>
+    <strong>Procedural Assignment (always/initial):</strong><br>
+    Executes only when triggered by the sensitivity list. Used for reg types. Two types:<ul>
+    <li><strong>Blocking (=)</strong>: Executes sequentially, one after another in the block</li>
+    <li><strong>Non-blocking (&lt;=)</strong>: All RHS evaluated first, then LHS assigned simultaneously</li></ul>
+    <code style="font-family:'JetBrains Mono';font-size:.82rem;color:#86efac">// Blocking — use for combinational<br>always @(A, B) Y = A | B;<br><br>// Non-blocking — use for sequential<br>always @(posedge clk) Q <= D;</code><br><br>
+    <strong>Golden Rule:</strong><ul>
+    <li>Combinational always blocks → use blocking (=)</li>
+    <li>Sequential (clocked) always blocks → use non-blocking (<=)</li>
+    <li>Never mix both in the same always block</li></ul>
+    <strong>Why non-blocking for sequential?</strong> Prevents simulation race conditions when multiple flip-flops share the same clock edge.`
+  }
+];
+
+// ─────────────────────────────────────────────
+// RENDER MCQs
+// ─────────────────────────────────────────────
+let answered = 0, correct = 0;
+const userAnswers = new Array(mcqs.length).fill(null);
+
+function renderMCQs() {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = mcqs.map((m, i) => `
+    <div class="mcq-card" id="mcq-${i}">
+      <div class="mcq-q">
+        <span class="q-num">${i+1}</span>
+        <span>${m.q}</span>
+      </div>
+      <div class="options">
+        ${m.opts.map((o, j) => `
+          <button class="opt-btn" id="opt-${i}-${j}" onclick="selectOption(${i},${j})" data-q="${i}" data-o="${j}">
+            <span class="opt-label">${'ABCD'[j]}</span>${o}
+          </button>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp-${i}">💡 ${m.exp}</div>
+    </div>
+  `).join('');
+}
+
+function selectOption(qi, oi) {
+  if (userAnswers[qi] !== null) return; // already answered
+  userAnswers[qi] = oi;
+  answered++;
+  if (oi === mcqs[qi].ans) correct++;
+  
+  // style selected option
+  document.getElementById(`opt-${qi}-${oi}`).classList.add('selected');
+  document.getElementById(`opt-${qi}-${oi}`).disabled = true;
+  
+  document.getElementById(`answered-count`).textContent = `${answered} / 20 answered`;
+  document.getElementById(`correct-count`).textContent = `✅ ${correct} correct`;
+  document.getElementById('progress-bar').style.width = `${(answered/20)*100}%`;
+}
+
+function submitQuiz() {
+  mcqs.forEach((m, i) => {
+    const card = document.getElementById(`mcq-${i}`);
+    const expDiv = document.getElementById(`exp-${i}`);
+    
+    // disable all buttons
+    ['A','B','C','D'].forEach((_,j) => {
+      const btn = document.getElementById(`opt-${i}-${j}`);
+      btn.disabled = true;
+      if (j === m.ans) btn.classList.add('correct-opt');
+    });
+    
+    if (userAnswers[i] !== null && userAnswers[i] !== m.ans) {
+      document.getElementById(`opt-${i}-${userAnswers[i]}`).classList.add('wrong-opt');
+      card.classList.add('wrong');
+    } else if (userAnswers[i] === m.ans) {
+      card.classList.add('correct');
+    }
+    expDiv.style.display = 'block';
+  });
+  
+  const sb = document.getElementById('score-board');
+  sb.style.display = 'block';
+  document.getElementById('score-text').textContent = `Your Score: ${correct} / 20`;
+  const pct = (correct/20)*100;
+  const msgs = ['Keep studying! You\'ll ace it next time! 💪','Good effort! Review the explanations above. 📖','Nice work! Almost there! 🎯','Great job! You really know Verilog! 🌟','Perfect score! You\'re a Verilog pro! 🏆'];
+  document.getElementById('score-msg').textContent = msgs[Math.floor(pct/25)] || msgs[4];
+  sb.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function resetQuiz() {
+  userAnswers.fill(null);
+  answered = 0; correct = 0;
+  document.getElementById('answered-count').textContent = '0 / 20 answered';
+  document.getElementById('correct-count').textContent = '✅ 0 correct';
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('score-board').style.display = 'none';
+  renderMCQs();
+}
+
+// ─────────────────────────────────────────────
+// RENDER Q&A
+// ─────────────────────────────────────────────
+function renderQA(data, containerId, type) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = data.map((item, i) => `
+    <div class="accordion">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span class="acc-num">${i+1}</span>
+        <span class="type-tag type-${type}">${type === 'short' ? '2-3M' : '5-10M'}</span>
+        <span style="flex:1">${item.q}</span>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        ${item.a}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  // close all in same section
+  btn.closest('section').querySelectorAll('.acc-head.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    body.classList.add('open');
+  }
+}
+
+// ─────────────────────────────────────────────
+// NAV HIGHLIGHT
+// ─────────────────────────────────────────────
+const navLinks = document.querySelectorAll('nav a');
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === `#${current}`);
+  });
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+renderMCQs();
+renderQA(shortQA, 'short-qa-container', 'short');
+renderQA(longQA, 'long-qa-container', 'long');
+</script>
+</body>
+</html>

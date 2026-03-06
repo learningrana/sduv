@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verilog Chapter 1 Quiz</title>
+
+<style>
+
+body{
+font-family: 'Segoe UI', sans-serif;
+margin:0;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.header{
+text-align:center;
+margin-bottom:20px;
+}
+
+.header h1{
+margin:0;
+font-size:30px;
+}
+
+.quiz-card{
+background:#1b1b2f;
+padding:20px;
+margin-bottom:15px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.4);
+}
+
+.question{
+font-size:18px;
+margin-bottom:10px;
+}
+
+.options label{
+display:block;
+padding:10px;
+margin:6px 0;
+background:#2d2d44;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.options label:hover{
+background:#40407a;
+}
+
+button{
+display:block;
+width:100%;
+padding:15px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#00c9a7;
+color:white;
+cursor:pointer;
+margin-top:20px;
+}
+
+button:hover{
+background:#00a386;
+}
+
+.result{
+margin-top:25px;
+padding:20px;
+text-align:center;
+font-size:22px;
+background:#162447;
+border-radius:10px;
+display:none;
+}
+
+.correct{
+background:#2ecc71 !important;
+}
+
+.wrong{
+background:#e74c3c !important;
+}
+
+@media(max-width:600px){
+.header h1{
+font-size:22px;
+}
+.question{
+font-size:16px;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>🎮 Verilog Chapter 1 Quiz</h1>
+<p>Test your knowledge of Logic Design & HDL</p>
+</div>
+
+<form id="quizForm"></form>
+
+<button onclick="submitQuiz()">Submit Quiz</button>
+
+<div id="result" class="result"></div>
+
+</div>
+
+<script>
+
+const quiz = [
+
+{
+q:"1. What does HDL stand for?",
+options:["Hardware Design Language","Hardware Description Language","High Definition Logic","Hardware Development Logic"],
+answer:1
+},
+
+{
+q:"2. Verilog is mainly used for:",
+options:["Web Development","Hardware Modelling","Database Design","Graphics Design"],
+answer:1
+},
+
+{
+q:"3. HDL allows designers to:",
+options:["Describe digital circuits","Design operating systems","Create databases","Build networks"],
+answer:0
+},
+
+{
+q:"4. Verilog was originally developed by:",
+options:["IBM","Intel","Gateway Design Automation","Microsoft"],
+answer:2
+},
+
+{
+q:"5. Verilog models digital systems at:",
+options:["Different abstraction levels","Only gate level","Only transistor level","Only software level"],
+answer:0
+},
+
+{
+q:"6. Structural modelling describes:",
+options:["Circuit structure using gates","Algorithm steps","Software flow","Data storage"],
+answer:0
+},
+
+{
+q:"7. Behavioural modelling focuses on:",
+options:["How circuit behaves","Gate connections","Wiring layout","PCB design"],
+answer:0
+},
+
+{
+q:"8. Dataflow modelling uses:",
+options:["Continuous assignments","Clock cycles","Assembly code","Interrupts"],
+answer:0
+},
+
+{
+q:"9. Which symbol is used for comments in Verilog?",
+options:["//","<!--","#","%%"],
+answer:0
+},
+
+{
+q:"10. Verilog is commonly used in:",
+options:["VLSI design","Mobile app design","Game engines","Cloud storage"],
+answer:0
+},
+
+{
+q:"11. HDL helps in:",
+options:["Simulation of digital circuits","Cooking recipes","Photo editing","Sound mixing"],
+answer:0
+},
+
+{
+q:"12. Which level is closest to hardware?",
+options:["Gate level","Behavioral level","Algorithm level","Application level"],
+answer:0
+},
+
+{
+q:"13. Which modelling describes logic gates explicitly?",
+options:["Structural modelling","Behavioural modelling","Dataflow modelling","Software modelling"],
+answer:0
+},
+
+{
+q:"14. Verilog supports:",
+options:["Concurrent execution","Only sequential execution","Manual execution","Network execution"],
+answer:0
+},
+
+{
+q:"15. Simulation helps to:",
+options:["Verify circuit design","Cook food","Play games","Build websites"],
+answer:0
+},
+
+{
+q:"16. HDL is mainly used before:",
+options:["Fabrication of chip","Selling computer","Installing OS","Buying hardware"],
+answer:0
+},
+
+{
+q:"17. Which industry uses Verilog heavily?",
+options:["VLSI industry","Fashion industry","Agriculture","Film industry"],
+answer:0
+},
+
+{
+q:"18. HDL models help in:",
+options:["Reducing design errors","Cooking faster","Increasing internet speed","Painting circuits"],
+answer:0
+},
+
+{
+q:"19. Verilog can model:",
+options:["Combinational and Sequential circuits","Only combinational","Only sequential","Only analog"],
+answer:0
+},
+
+{
+q:"20. HDL allows designers to simulate circuits:",
+options:["Before hardware implementation","After selling chips","Only during manufacturing","Never"],
+answer:0
+}
+
+];
+
+const form = document.getElementById("quizForm");
+
+quiz.forEach((item,index)=>{
+
+let card=document.createElement("div");
+card.className="quiz-card";
+
+let html=`
+<div class="question">${item.q}</div>
+<div class="options">
+`;
+
+item.options.forEach((opt,i)=>{
+html+=`
+<label>
+<input type="radio" name="q${index}" value="${i}">
+${opt}
+</label>
+`;
+});
+
+html+=`</div>`;
+card.innerHTML=html;
+form.appendChild(card);
+
+});
+
+function submitQuiz(){
+
+let score=0;
+
+quiz.forEach((item,index)=>{
+
+let selected=document.querySelector(`input[name="q${index}"]:checked`);
+
+if(selected){
+if(parseInt(selected.value)===item.answer){
+score++;
+selected.parentElement.classList.add("correct");
+}
+else{
+selected.parentElement.classList.add("wrong");
+}
+}
+
+});
+
+let result=document.getElementById("result");
+result.style.display="block";
+
+result.innerHTML=`
+🏆 Your Score: <b>${score} / ${quiz.length}</b><br><br>
+${score>=15 ? "🔥 Excellent!" :
+score>=10 ? "👍 Good Job!" :
+"📚 Keep Practicing!"}
+`;
+
+window.scrollTo(0,document.body.scrollHeight);
+
+}
+
+</script>
+
+</body>
+</html>
