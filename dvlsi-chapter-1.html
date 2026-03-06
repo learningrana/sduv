@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Unit I – Introduction to VLSI Design | Digital VLSI Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0c0800;--bg2:#130e00;--bg3:#1a1200;
+  --gold:#f0a500;--gold2:#d4880a;--gold3:#ffe066;
+  --rust:#e05c1a;--rust2:#c04010;
+  --green:#22c55e;--blue:#38bdf8;
+  --text:#f5edd6;--muted:#a89060;
+  --border:rgba(240,165,0,.2);--glow:rgba(240,165,0,.1);
+  --card:#181000;--card2:#201600;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden;}
+
+/* ── CHIP SVG BG ── */
+.chip-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.18;}
+.chip-bg svg{width:100%;height:100%;}
+
+/* ── NAV ── */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;gap:.5rem;
+  padding:.7rem 1.5rem;
+  background:rgba(12,8,0,.88);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+.nav-brand{
+  font-family:'Fraunces',serif;font-weight:900;font-size:1rem;
+  color:var(--gold);white-space:nowrap;margin-right:.5rem;
+  text-decoration:none;
+}
+.topnav a{
+  color:var(--muted);text-decoration:none;font-size:.78rem;font-weight:500;
+  padding:.3rem .65rem;border-radius:6px;white-space:nowrap;transition:.2s;
+}
+.topnav a:hover{color:var(--gold);background:var(--glow);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:6rem 1.5rem 3rem;position:relative;z-index:1;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%,rgba(240,165,0,.22) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 80%,rgba(224,92,26,.15) 0%,transparent 60%),
+    var(--bg);
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(240,165,0,.04) 50px),
+    repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(240,165,0,.04) 50px);
+  pointer-events:none;
+}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.3);
+  border-radius:999px;padding:.3rem 1rem;
+  font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.6rem;
+  animation:fadeUp .6s ease both;
+}
+.hero-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:blink 1.5s infinite;}
+.hero h1{
+  font-family:'Fraunces',serif;font-weight:900;
+  font-size:clamp(2.2rem,7vw,5.2rem);line-height:1.05;
+  letter-spacing:-.02em;
+  animation:fadeUp .7s .1s ease both;
+}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero h1 .line2{
+  background:linear-gradient(90deg,var(--rust),var(--gold),#fff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{max-width:540px;margin:.9rem auto 0;color:var(--muted);font-size:1rem;animation:fadeUp .7s .2s ease both;}
+.hero-badges{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:1.8rem;animation:fadeUp .7s .3s ease both;}
+.hbadge{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.35rem .85rem;font-size:.8rem;color:var(--muted);}
+.hbadge strong{color:var(--text);}
+.hero-cta{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:2rem;animation:fadeUp .7s .4s ease both;}
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.7rem 1.5rem;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;transition:all .25s;border:none;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;box-shadow:0 4px 20px rgba(240,165,0,.35);}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(240,165,0,.5);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2);}
+.btn-ghost:hover{background:rgba(255,255,255,.07);}
+.scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;color:var(--muted);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;}
+.scroll-cue::after{content:'';width:1px;height:36px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrl 1.6s ease-in-out infinite;}
+
+/* ── LAYOUT ── */
+.container{max-width:920px;margin:0 auto;padding:0 1.5rem;}
+.section{padding:4.5rem 0;position:relative;z-index:1;}
+.section-alt{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+
+/* ── SECTION HEAD ── */
+.sh{margin-bottom:2rem;}
+.sh .lbl{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;}
+.sh .lbl::after{content:'';flex:0 0 36px;height:1px;background:var(--gold);opacity:.4;}
+.sh h2{font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,2.5rem);font-weight:900;color:#fff;line-height:1.1;}
+
+/* ── CONCEPT CARD ── */
+.concept{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.3rem;position:relative;overflow:hidden;}
+.concept::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold),var(--rust));}
+.concept h3{font-size:1.05rem;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:.55rem;margin-bottom:.6rem;}
+.concept h3 .ic{width:30px;height:30px;border-radius:8px;background:rgba(240,165,0,.12);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.concept p,.concept ul{font-size:.93rem;color:var(--muted);line-height:1.75;}
+.concept ul{padding-left:1.1rem;margin-top:.4rem;}
+.concept ul li{margin-bottom:.3rem;}
+
+/* ── EXAMPLE BOX ── */
+.ex{background:linear-gradient(135deg,rgba(34,197,94,.07),rgba(240,165,0,.05));border:1px solid rgba(34,197,94,.22);border-radius:12px;padding:1.1rem 1.3rem;margin:1.1rem 0;}
+.ex-tag{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4ade80;display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.4rem;}
+.ex-tag::before{content:'🇮🇳';}
+.ex p{font-size:.93rem;color:var(--text);}
+
+/* ── DIAGRAM BOX ── */
+.diagram{background:#0a0800;border:1px solid rgba(240,165,0,.25);border-radius:12px;padding:1.3rem;margin:1.1rem 0;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#fbbf24;line-height:1.7;overflow-x:auto;}
+.diagram .comment{color:#57534e;font-style:italic;}
+.diagram .box{color:var(--gold3);}
+.diagram .arrow{color:var(--rust);}
+
+/* ── TWO COL ── */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;}
+
+/* ── HIGHLIGHT CARD ── */
+.hcard{background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.3rem 1.4rem;transition:all .25s;}
+.hcard:hover{border-color:rgba(240,165,0,.3);transform:translateY(-3px);box-shadow:0 12px 36px rgba(240,165,0,.08);}
+.hcard .hc-icon{font-size:1.6rem;margin-bottom:.7rem;}
+.hcard h3{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+.hcard p{font-size:.82rem;color:var(--muted);line-height:1.55;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;margin:1rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.88rem;}
+th{background:rgba(240,165,0,.18);color:var(--gold);padding:.6rem .85rem;text-align:center;font-weight:700;border:1px solid var(--border);}
+td{padding:.5rem .85rem;text-align:center;border:1px solid rgba(240,165,0,.1);color:var(--text);}
+tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+tr:hover td{background:rgba(240,165,0,.05);}
+
+/* ── INFO BOX ── */
+.info{display:flex;gap:.9rem;align-items:flex-start;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:11px;padding:.9rem 1.1rem;margin:1rem 0;}
+.info .ii{font-size:1.3rem;flex-shrink:0;}
+.info p{font-size:.88rem;color:var(--text);}
+.info p strong{color:#7dd3fc;}
+
+/* ── MOORE'S LAW VIZ ── */
+.moores{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.2rem 0;align-items:flex-end;}
+.moores-bar{display:flex;flex-direction:column;align-items:center;gap:.3rem;}
+.moores-bar .bar{width:44px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:4px 4px 0 0;transition:height .5s ease;}
+.moores-bar .yr{font-size:.65rem;color:var(--muted);}
+.moores-bar .val{font-size:.6rem;color:var(--gold);font-weight:600;}
+
+/* ── Y-CHART SVG ── */
+.ychart-wrap{display:flex;justify-content:center;margin:1.5rem 0;}
+.ychart-wrap svg{max-width:320px;width:100%;}
+
+/* ── MCQ ── */
+#mcq-section{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);border-top:1px solid var(--border);}
+.mcq-hdr{text-align:center;margin-bottom:2rem;}
+.mcq-hdr h2{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--gold);}
+.mcq-hdr p{color:var(--muted);font-size:.88rem;margin-top:.4rem;}
+.mcq-meta{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin:.8rem 0;font-size:.82rem;color:var(--muted);}
+.mcq-meta span{background:rgba(255,255,255,.05);border-radius:6px;padding:.2rem .65rem;}
+.prog-wrap{background:rgba(255,255,255,.06);border-radius:999px;height:4px;margin:1rem 0;}
+.prog-bar{height:4px;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--rust));transition:width .5s;}
+#scoreboard{background:linear-gradient(135deg,rgba(240,165,0,.12),rgba(224,92,26,.07));border:1px solid rgba(240,165,0,.25);border-radius:14px;padding:1.4rem;text-align:center;margin-bottom:1.5rem;display:none;}
+#scoreboard h3{font-family:'Fraunces',serif;font-size:1.7rem;color:var(--gold);}
+#scoreboard p{color:var(--muted);margin-top:.3rem;}
+.mcq-card{background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.4rem;margin-bottom:1.1rem;transition:border-color .3s;}
+.mcq-card.correct{border-color:var(--green);background:rgba(34,197,94,.05);}
+.mcq-card.wrong{border-color:var(--rust);background:rgba(224,92,26,.05);}
+.mcq-q{display:flex;gap:.7rem;font-weight:600;font-size:.95rem;margin-bottom:.9rem;}
+.qn{min-width:28px;height:28px;border-radius:8px;background:rgba(240,165,0,.18);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;}
+.opts{display:grid;gap:.45rem;}
+.opt{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:.55rem .95rem;text-align:left;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.87rem;color:var(--text);transition:all .2s;display:flex;align-items:center;gap:.65rem;}
+.opt:hover:not(:disabled){background:rgba(240,165,0,.1);border-color:rgba(240,165,0,.35);}
+.opt.selected{background:rgba(240,165,0,.15);border-color:var(--gold);color:var(--gold);}
+.opt.correct-opt{background:rgba(34,197,94,.12);border-color:var(--green);color:#4ade80;}
+.opt.wrong-opt{background:rgba(224,92,26,.12);border-color:var(--rust);color:#fb923c;}
+.opt-lbl{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+.exp{margin-top:.75rem;padding:.65rem 1rem;background:rgba(56,189,248,.06);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-size:.84rem;color:#93c5fd;display:none;}
+.mcq-ctrl{display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;margin-top:1.8rem;}
+
+/* ── QA ── */
+.qa-section{padding:3.5rem 0;position:relative;z-index:1;}
+.acc{margin-bottom:.75rem;}
+.acc-head{width:100%;background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:.95rem 1.2rem;display:flex;align-items:flex-start;gap:.7rem;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;font-weight:600;font-size:.91rem;color:var(--text);transition:all .2s;}
+.acc-head:hover{border-color:rgba(240,165,0,.3);background:var(--card2);}
+.acc-head.open{background:var(--card2);border-color:var(--gold);border-radius:12px 12px 0 0;}
+.acc-num{min-width:26px;height:26px;border-radius:7px;background:rgba(240,165,0,.18);color:var(--gold);font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem;}
+.acc-type{font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:.13rem .5rem;flex-shrink:0;margin-top:.1rem;}
+.type-s{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.2);}
+.type-l{background:rgba(240,165,0,.1);color:var(--gold);border:1px solid rgba(240,165,0,.2);}
+.acc-arr{margin-left:auto;flex-shrink:0;color:var(--muted);transition:transform .3s;font-size:.9rem;}
+.acc-head.open .acc-arr{transform:rotate(180deg);color:var(--gold);}
+.acc-body{background:rgba(24,16,0,.9);border:1px solid var(--gold);border-top:none;border-radius:0 0 12px 12px;padding:1.1rem 1.3rem;font-size:.9rem;color:var(--muted);line-height:1.78;display:none;}
+.acc-body.open{display:block;animation:slideDown .25s ease;}
+.acc-body strong{color:var(--text);}
+.acc-body code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.4);color:#fbbf24;font-size:.8rem;padding:.1rem .35rem;border-radius:4px;}
+.acc-body ul{padding-left:1.1rem;margin-top:.4rem;}
+.acc-body ul li{margin-bottom:.3rem;}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.8rem;position:relative;z-index:1;}
+footer .fl{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:900;color:var(--gold);margin-bottom:.4rem;}
+
+/* ── ANIMS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes scrl{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+@media(max-width:640px){.topnav{flex-wrap:nowrap;overflow-x:auto;}.hero h1{font-size:2rem;}.container{padding:0 1rem;}}
+</style>
+</head>
+<body>
+
+<!-- CHIP BACKGROUND -->
+<div class="chip-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- Horizontal traces -->
+    <line x1="0" y1="120" x2="1400" y2="120" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="0" y1="240" x2="1400" y2="240" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="0" y1="360" x2="1400" y2="360" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="0" y1="480" x2="1400" y2="480" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="0" y1="600" x2="1400" y2="600" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="0" y1="720" x2="1400" y2="720" stroke="#f0a500" stroke-width="0.5"/>
+    <!-- Vertical traces -->
+    <line x1="140" y1="0" x2="140" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="280" y1="0" x2="280" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="420" y1="0" x2="420" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="560" y1="0" x2="560" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="700" y1="0" x2="700" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="840" y1="0" x2="840" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="980" y1="0" x2="980" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="1120" y1="0" x2="1120" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <line x1="1260" y1="0" x2="1260" y2="900" stroke="#f0a500" stroke-width="0.5"/>
+    <!-- Gate symbols -->
+    <rect x="380" y="100" width="80" height="40" fill="none" stroke="#f0a500" stroke-width="1" rx="4"/>
+    <rect x="680" y="340" width="80" height="40" fill="none" stroke="#e05c1a" stroke-width="1" rx="4"/>
+    <rect x="980" y="580" width="80" height="40" fill="none" stroke="#f0a500" stroke-width="1" rx="4"/>
+    <rect x="200" y="460" width="80" height="40" fill="none" stroke="#e05c1a" stroke-width="1" rx="4"/>
+    <rect x="1100" y="220" width="80" height="40" fill="none" stroke="#f0a500" stroke-width="1" rx="4"/>
+    <!-- Via dots -->
+    <circle cx="140" cy="120" r="3" fill="#f0a500"/>
+    <circle cx="280" cy="240" r="3" fill="#f0a500"/>
+    <circle cx="420" cy="360" r="3" fill="#e05c1a"/>
+    <circle cx="560" cy="480" r="3" fill="#f0a500"/>
+    <circle cx="700" cy="600" r="3" fill="#f0a500"/>
+    <circle cx="840" cy="120" r="3" fill="#e05c1a"/>
+    <circle cx="980" cy="360" r="3" fill="#f0a500"/>
+    <circle cx="1120" cy="480" r="3" fill="#f0a500"/>
+  </svg>
+</div>
+
+<!-- NAV -->
+<nav class="topnav">
+  <a class="nav-brand" href="#">⬡ VLSI Unit I</a>
+  <a href="#moores">Moore's Law</a>
+  <a href="#design-flow">Design Flow</a>
+  <a href="#issues">Design Issues</a>
+  <a href="#ychart">Y-Chart</a>
+  <a href="#styles">Design Styles</a>
+  <a href="#physical">Physical Design</a>
+  <a href="#mcq-section">MCQ Quiz</a>
+  <a href="#short-qa">Short Q&A</a>
+  <a href="#long-qa">Long Q&A</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-pill"><span class="dot"></span>Third Year · Semester VI · BTEEV602</div>
+  <h1>
+    <span>Digital</span><br/>
+    <em>VLSI Design</em><br/>
+    <span class="line2">Unit I — Introduction</span>
+  </h1>
+  <p class="hero-sub">Moore's Law · VLSI Circuit Design Flow · Y-Chart · Design Styles · Physical Design Rules</p>
+  <div class="hero-badges">
+    <div class="hbadge"><strong>Code:</strong> BTEEV602</div>
+    <div class="hbadge"><strong>Credits:</strong> 3</div>
+    <div class="hbadge"><strong>Hours:</strong> 8</div>
+    <div class="hbadge"><strong>PCC8</strong></div>
+    <div class="hbadge"><strong>End Sem:</strong> 60 Marks</div>
+  </div>
+  <div class="hero-cta">
+    <a href="#moores" class="btn btn-gold">🚀 Start Learning</a>
+    <a href="#mcq-section" class="btn btn-ghost">🎯 Go to Quiz</a>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<!-- ══════════ SECTION 1: MOORE'S LAW ══════════ -->
+<div class="container">
+<section class="section" id="moores">
+  <div class="sh reveal">
+    <div class="lbl">Topic 1</div>
+    <h2>Moore's Law & VLSI Trends</h2>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">📈</span>Moore's Law — The Driving Force of VLSI</h3>
+    <p><strong style="color:#fff">Moore's Law</strong> (1965, Gordon Moore, Intel co-founder) states: <em style="color:var(--gold)">"The number of transistors on a chip doubles approximately every 18–24 months while the cost per transistor halves."</em></p>
+    <ul>
+      <li>1971 — Intel 4004: <strong style="color:#fff">2,300 transistors</strong>, 10 µm process</li>
+      <li>1985 — Intel 386: <strong style="color:#fff">275,000 transistors</strong>, 1.5 µm process</li>
+      <li>2000 — Pentium 4: <strong style="color:#fff">42 million transistors</strong>, 180 nm process</li>
+      <li>2010 — Intel Core i7: <strong style="color:#fff">1.17 billion transistors</strong>, 32 nm process</li>
+      <li>2023 — Apple M2 Ultra: <strong style="color:#fff">134 billion transistors</strong>, 5 nm process</li>
+    </ul>
+  </div>
+
+  <!-- Moore's Law Bar Chart -->
+  <div class="reveal" style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.3rem 1.5rem;margin:1.2rem 0;">
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;">📊 Transistor Count Growth (Relative Scale)</p>
+    <div style="display:flex;gap:.6rem;align-items:flex-end;overflow-x:auto;padding-bottom:.5rem;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--gold)">2.3K</span>
+        <div style="width:38px;height:8px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">1971</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--gold)">29K</span>
+        <div style="width:38px;height:14px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">1975</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--gold)">275K</span>
+        <div style="width:38px;height:26px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">1985</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--gold)">1.2M</span>
+        <div style="width:38px;height:40px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">1989</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--gold)">42M</span>
+        <div style="width:38px;height:65px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">2000</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--gold)">1.17B</span>
+        <div style="width:38px;height:100px;background:linear-gradient(to top,var(--gold2),var(--gold3));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">2010</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0;">
+        <span style="font-size:.6rem;color:var(--rust)">134B</span>
+        <div style="width:38px;height:160px;background:linear-gradient(to top,var(--rust2),var(--rust));border-radius:3px 3px 0 0;"></div>
+        <span style="font-size:.62rem;color:var(--muted)">2023</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex reveal">
+    <div class="ex-tag">Indian Daily Life Example</div>
+    <p><strong>Think of your Jio 5G SIM card.</strong> The network chip inside Jio's base stations follows Moore's Law — packed with billions of transistors to handle millions of calls simultaneously. In 1990, that entire phone network would have needed a building full of equipment. Today it fits on a chip smaller than your thumbnail!</p>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">📉</span>Trends in VLSI Circuits</h3>
+    <div class="grid2">
+      <div>
+        <p style="color:#fff;font-weight:700;margin-bottom:.4rem;">↑ Increasing Trends:</p>
+        <ul>
+          <li>Integration density (more transistors/cm²)</li>
+          <li>Clock frequency (GHz range)</li>
+          <li>Functionality per chip</li>
+          <li>Die area utilisation</li>
+        </ul>
+      </div>
+      <div>
+        <p style="color:#fff;font-weight:700;margin-bottom:.4rem;">↓ Decreasing Trends:</p>
+        <ul>
+          <li>Feature size (nm → Å range)</li>
+          <li>Supply voltage (5V → 0.7V)</li>
+          <li>Cost per transistor</li>
+          <li>Propagation delay per gate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 2: VLSI DESIGN FLOW ══════════ -->
+<section class="section section-alt" id="design-flow">
+  <div class="sh reveal">
+    <div class="lbl">Topic 2</div>
+    <h2>VLSI Circuit Design Flow</h2>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">🔄</span>What is a Design Flow?</h3>
+    <p>A VLSI Design Flow is the <strong style="color:#fff">step-by-step process</strong> used to convert a system specification into a working silicon chip. It's like a recipe — each step must be completed correctly before moving to the next.</p>
+  </div>
+
+  <div class="diagram reveal">
+<span class="comment">// VLSI Design Flow — Top Down Approach</span>
+
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  1. SYSTEM SPECIFICATION               │</span>  <span class="comment">← Define what chip must do</span>
+<span class="box">│     (Functionality, Speed, Power, Cost) │</span>
+<span class="box">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">↓</span>
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  2. ARCHITECTURAL DESIGN               │</span>  <span class="comment">← Block level design</span>
+<span class="box">│     (ALU, Memory, Bus, I/O blocks)      │</span>
+<span class="box">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">↓</span>
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  3. LOGIC DESIGN (RTL)                 │</span>  <span class="comment">← Verilog/VHDL description</span>
+<span class="box">│     (Boolean equations, State machines) │</span>
+<span class="box">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">↓</span>
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  4. CIRCUIT DESIGN                     │</span>  <span class="comment">← Gate/transistor level</span>
+<span class="box">│     (Netlist: gates, transistors)       │</span>
+<span class="box">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">↓</span>
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  5. PHYSICAL DESIGN (LAYOUT)           │</span>  <span class="comment">← Place & Route</span>
+<span class="box">│     (Stick diagram → Mask layout)       │</span>
+<span class="box">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">↓</span>
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  6. FABRICATION (FAB)                  │</span>  <span class="comment">← Silicon wafer processing</span>
+<span class="box">│     (Photolithography, Doping, Etching) │</span>
+<span class="box">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">↓</span>
+<span class="box">┌─────────────────────────────────────────┐</span>
+<span class="box">│  7. TESTING & PACKAGING                │</span>  <span class="comment">← Wafer test → Final chip</span>
+<span class="box">└─────────────────────────────────────────┘</span>
+  </div>
+
+  <div class="ex reveal">
+    <div class="ex-tag">Real World Example — Qualcomm Snapdragon Chip</div>
+    <p>When Qualcomm designs the <strong>Snapdragon 8 Gen 3</strong> chip used in Samsung Galaxy phones sold across India: Engineers first write the specification (4G/5G modem + AI processor + GPU), then design in RTL using Verilog, synthesise to gates, do physical layout in Cadence Virtuoso, send the GDSII file to TSMC (fab in Taiwan), receive back silicon wafers, test each die, and package it — the entire flow takes 2–3 years!</p>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 3: DESIGN ISSUES ══════════ -->
+<section class="section" id="issues">
+  <div class="sh reveal">
+    <div class="lbl">Topic 3</div>
+    <h2>VLSI Design Issues</h2>
+  </div>
+
+  <div class="grid2 reveal">
+    <div class="hcard">
+      <div class="hc-icon">⚡</div>
+      <h3>Power Dissipation</h3>
+      <p>As transistors pack closer, heat generation becomes critical. <strong>Dynamic power</strong> (switching) and <strong>static power</strong> (leakage) must be minimised. A smartphone chip consuming too much power drains battery fast.</p>
+    </div>
+    <div class="hcard">
+      <div class="hc-icon">🏎️</div>
+      <h3>Speed / Timing</h3>
+      <p><strong>Propagation delay</strong> through logic paths must meet timing constraints. Critical path determines maximum clock frequency. Setup and hold time violations cause functional errors.</p>
+    </div>
+    <div class="hcard">
+      <div class="hc-icon">📐</div>
+      <h3>Area / Integration</h3>
+      <p>More functions = more transistors = larger die area = higher cost. <strong>Area optimisation</strong> using smaller feature sizes allows fitting more logic without increasing cost.</p>
+    </div>
+    <div class="hcard">
+      <div class="hc-icon">🔩</div>
+      <h3>Reliability</h3>
+      <p>Smaller transistors are more susceptible to <strong>electromigration</strong>, <strong>hot carrier effects</strong>, and <strong>oxide breakdown</strong>. Designs must be robust over 10+ year lifetimes.</p>
+    </div>
+    <div class="hcard">
+      <div class="hc-icon">🌡️</div>
+      <h3>Thermal Management</h3>
+      <p>Dense chips generate enormous heat (Apple M2 chip dissipates ~100W). <strong>Thermal vias, heat spreaders, and cooling systems</strong> must be co-designed with the chip.</p>
+    </div>
+    <div class="hcard">
+      <div class="hc-icon">🔬</div>
+      <h3>Process Variability</h3>
+      <p>At sub-10nm, random dopant fluctuations and line-edge roughness cause transistors on the same chip to vary significantly — requiring <strong>statistical design</strong> techniques.</p>
+    </div>
+  </div>
+
+  <div class="ex reveal">
+    <div class="ex-tag">Indian Context — Why Your Phone Gets Hot</div>
+    <p>When you play BGMI (Battlegrounds Mobile India) for 2 hours on your OnePlus phone, the Snapdragon chip heats up and throttles its speed. This is the <strong>power-speed-thermal triangle</strong> of VLSI design — the biggest challenge for every chip designer at companies like MediaTek (chips in most budget Indian phones).</p>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 4: Y-CHART ══════════ -->
+<section class="section section-alt" id="ychart">
+  <div class="sh reveal">
+    <div class="lbl">Topic 4</div>
+    <h2>The Gajski-Kuhn Y-Chart</h2>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">📊</span>What is the Y-Chart?</h3>
+    <p>The <strong style="color:#fff">Y-Chart</strong> (proposed by Gajski and Kuhn, 1983) is a conceptual model that organises VLSI design into <strong style="color:var(--gold)">three domains</strong> arranged like the letter Y, with multiple <strong style="color:var(--gold)">levels of abstraction</strong> along each axis.</p>
+  </div>
+
+  <!-- Y-Chart SVG Diagram -->
+  <div class="ychart-wrap reveal">
+    <svg viewBox="0 0 340 320" xmlns="http://www.w3.org/2000/svg" style="font-family:'Outfit',sans-serif;">
+      <!-- Three axes -->
+      <line x1="170" y1="170" x2="170" y2="20" stroke="#22c55e" stroke-width="2.5"/>
+      <line x1="170" y1="170" x2="30" y2="290" stroke="#f0a500" stroke-width="2.5"/>
+      <line x1="170" y1="170" x2="310" y2="290" stroke="#38bdf8" stroke-width="2.5"/>
+      <!-- Arrowheads -->
+      <polygon points="170,14 164,28 176,28" fill="#22c55e"/>
+      <polygon points="24,294 38,282 32,296" fill="#f0a500"/>
+      <polygon points="316,294 302,282 308,296" fill="#38bdf8"/>
+      <!-- Domain Labels -->
+      <text x="170" y="10" fill="#22c55e" font-size="11" font-weight="700" text-anchor="middle">BEHAVIOURAL</text>
+      <text x="10" y="310" fill="#f0a500" font-size="11" font-weight="700" text-anchor="middle">STRUCTURAL</text>
+      <text x="330" y="310" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle">PHYSICAL</text>
+      <!-- Center -->
+      <circle cx="170" cy="170" r="7" fill="#f0a500"/>
+      <!-- Concentric rings -->
+      <circle cx="170" cy="170" r="40" fill="none" stroke="rgba(240,165,0,.15)" stroke-width="1" stroke-dasharray="4,4"/>
+      <circle cx="170" cy="170" r="80" fill="none" stroke="rgba(240,165,0,.12)" stroke-width="1" stroke-dasharray="4,4"/>
+      <circle cx="170" cy="170" r="120" fill="none" stroke="rgba(240,165,0,.09)" stroke-width="1" stroke-dasharray="4,4"/>
+      <!-- Behavioural axis labels -->
+      <text x="175" y="145" fill="#86efac" font-size="8.5">Algorithmic</text>
+      <text x="175" y="110" fill="#86efac" font-size="8.5">RTL</text>
+      <text x="175" y="72" fill="#86efac" font-size="8.5">Logic</text>
+      <text x="175" y="40" fill="#86efac" font-size="8.5">System</text>
+      <!-- Structural axis labels -->
+      <text x="75" y="230" fill="#fbbf24" font-size="8.5">Modules</text>
+      <text x="60" y="255" fill="#fbbf24" font-size="8.5">Cells/Gates</text>
+      <text x="40" y="275" fill="#fbbf24" font-size="8.5">Transistors</text>
+      <!-- Physical axis labels -->
+      <text x="215" y="230" fill="#7dd3fc" font-size="8.5">FloorPlan</text>
+      <text x="225" y="255" fill="#7dd3fc" font-size="8.5">Std. Cells</text>
+      <text x="235" y="275" fill="#7dd3fc" font-size="8.5">Layout</text>
+    </svg>
+  </div>
+
+  <div class="grid2 reveal" style="margin-top:1.2rem;">
+    <div class="concept">
+      <h3><span class="ic" style="color:#22c55e">🧠</span>Behavioural Domain</h3>
+      <p>Describes <em>what</em> the system does — its function and algorithm. Levels from top:</p>
+      <ul>
+        <li><strong style="color:#fff">System level:</strong> High-level algorithm</li>
+        <li><strong style="color:#fff">RTL level:</strong> Register transfers, state machines</li>
+        <li><strong style="color:#fff">Logic level:</strong> Boolean equations</li>
+        <li><strong style="color:#fff">Transistor level:</strong> Differential equations</li>
+      </ul>
+    </div>
+    <div class="concept">
+      <h3><span class="ic" style="color:var(--gold)">🔩</span>Structural Domain</h3>
+      <p>Describes <em>how</em> the system is constructed from components:</p>
+      <ul>
+        <li><strong style="color:#fff">Processor, Memory, Bus</strong> (System level)</li>
+        <li><strong style="color:#fff">ALU, Registers, Mux</strong> (RTL level)</li>
+        <li><strong style="color:#fff">Logic gates, Flip-flops</strong> (Logic level)</li>
+        <li><strong style="color:#fff">MOSFET transistors</strong> (Circuit level)</li>
+      </ul>
+    </div>
+    <div class="concept">
+      <h3><span class="ic" style="color:var(--blue)">📐</span>Physical Domain</h3>
+      <p>Describes the geometric layout on silicon:</p>
+      <ul>
+        <li><strong style="color:#fff">Chip floorplan</strong> (blocks placement)</li>
+        <li><strong style="color:#fff">Module layout</strong> (sub-blocks)</li>
+        <li><strong style="color:#fff">Standard cell layout</strong></li>
+        <li><strong style="color:#fff">Full custom transistor layout</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info reveal">
+    <div class="ii">💡</div>
+    <p><strong>Key Insight:</strong> The Y-Chart shows that at every level of abstraction, all three domains must be considered together. Moving inward on the Y = going to lower abstraction (more detail). Moving outward = higher abstraction (system view). Design synthesis is moving between domains at the same level.</p>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 5: DESIGN STYLES ══════════ -->
+<section class="section" id="styles">
+  <div class="sh reveal">
+    <div class="lbl">Topic 5</div>
+    <h2>VLSI Design Styles</h2>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">🎨</span>Full Custom Design</h3>
+    <p>Every transistor, every wire is designed from scratch by hand. Designer has <strong style="color:#fff">complete control</strong> over geometry, sizing, and placement.</p>
+    <ul>
+      <li>✅ Maximum performance, minimum area, lowest power</li>
+      <li>❌ Extremely time-consuming (months to years)</li>
+      <li>❌ Very expensive (requires expert designers)</li>
+      <li>🔍 Used for: CPU cores (Intel, AMD), high-speed memory cells, analog circuits</li>
+    </ul>
+  </div>
+
+  <div class="ex reveal">
+    <div class="ex-tag">Example — Full Custom in Action</div>
+    <p>Apple's M-series chips use full-custom design for their <strong>high-performance cores</strong>. Apple engineers hand-optimise the critical paths (ALU, cache) in Cadence Virtuoso, spending months to shave a few picoseconds off the delay. That's why Apple chips outperform competitors with the same transistor count.</p>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">📦</span>Semi-Custom Design</h3>
+    <p>Uses <strong style="color:#fff">pre-designed, pre-characterised cells</strong> from a library. Designer connects them according to the netlist — no need to design individual transistors.</p>
+    <div class="grid2" style="margin-top:.8rem;">
+      <div style="background:rgba(240,165,0,.06);border:1px solid var(--border);border-radius:10px;padding:1rem;">
+        <p style="color:var(--gold);font-weight:700;margin-bottom:.4rem;">Standard Cell Design</p>
+        <ul style="font-size:.85rem;color:var(--muted);">
+          <li>Library of pre-designed logic cells (AND, OR, FF, MUX)</li>
+          <li>All cells have same height, variable width</li>
+          <li>EDA tools do placement and routing automatically</li>
+          <li>Used in: ASICs for telecom, IoT chips</li>
+        </ul>
+      </div>
+      <div style="background:rgba(240,165,0,.06);border:1px solid var(--border);border-radius:10px;padding:1rem;">
+        <p style="color:var(--gold);font-weight:700;margin-bottom:.4rem;">Gate Array / FPGA</p>
+        <ul style="font-size:.85rem;color:var(--muted);">
+          <li>Pre-fabricated array of logic gates</li>
+          <li>Customised by programming the connections</li>
+          <li>FPGAs: field-programmable (reconfigurable)</li>
+          <li>Used in: Prototyping, defence, signal processing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap reveal">
+    <table>
+      <tr><th>Parameter</th><th>Full Custom</th><th>Standard Cell</th><th>FPGA</th></tr>
+      <tr><td>Design Time</td><td>Very Long</td><td>Medium</td><td>Short</td></tr>
+      <tr><td>Performance</td><td>Best</td><td>Good</td><td>Moderate</td></tr>
+      <tr><td>Area Efficiency</td><td>Best</td><td>Good</td><td>Poor (2–5× overhead)</td></tr>
+      <tr><td>NRE Cost</td><td>Very High</td><td>High</td><td>Low</td></tr>
+      <tr><td>Flexibility</td><td>None</td><td>Low</td><td>High</td></tr>
+      <tr><td>Volume Usage</td><td>High volume</td><td>Medium-High</td><td>Low–Medium</td></tr>
+    </table>
+  </div>
+
+  <div class="ex reveal">
+    <div class="ex-tag">Indian Context — What ISRO Uses</div>
+    <p>ISRO's Chandrayaan-3 mission used <strong>radiation-hardened FPGAs</strong> (from Xilinx/AMD) for onboard processing — because they're reprogrammable even after launch. The Ground Control at ISTRAC Bengaluru sends updated programs to reconfigure the FPGA mid-mission. That's the power of semi-custom design!</p>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 6: PHYSICAL DESIGN ══════════ -->
+<section class="section section-alt" id="physical">
+  <div class="sh reveal">
+    <div class="lbl">Topic 6</div>
+    <h2>Physical Design — Rules, Diagrams & Layout</h2>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">📏</span>Design Rules</h3>
+    <p>Design Rules are <strong style="color:#fff">geometric constraints</strong> that define minimum dimensions and spacings for layout patterns to ensure correct fabrication. They are specified by the fab (foundry) and must be strictly followed.</p>
+    <ul>
+      <li><strong style="color:#fff">Minimum Width:</strong> Minimum width of a wire/poly to survive etching</li>
+      <li><strong style="color:#fff">Minimum Spacing:</strong> Minimum gap between two parallel wires to avoid shorts</li>
+      <li><strong style="color:#fff">Minimum Enclosure:</strong> Contact must be surrounded by minimum metal overlap</li>
+      <li><strong style="color:#fff">Extension Rule:</strong> Poly must extend beyond active by minimum distance</li>
+    </ul>
+    <p style="margin-top:.6rem;">Rules are expressed in <strong style="color:var(--gold)">lambda (λ)</strong> units where λ = half the minimum feature size, OR in actual microns/nanometers.</p>
+  </div>
+
+  <div class="diagram reveal">
+<span class="comment">// Lambda-based Design Rules (simplified)</span>
+
+Minimum wire width     :  2λ
+Minimum wire spacing   :  3λ
+Contact size           :  2λ × 2λ
+Contact-to-gate spacing:  2λ
+Poly width             :  2λ
+Poly-to-poly spacing   :  3λ
+Active width           :  3λ
+Field oxide spacing    :  6λ
+
+<span class="comment">// Example: 45nm process → λ = 22.5nm</span>
+Min wire width = 2 × 22.5nm = 45nm
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">🖊️</span>Stick Diagrams</h3>
+    <p>A <strong style="color:#fff">Stick Diagram</strong> is a simplified, schematic representation of a CMOS layout using colour-coded lines. It shows the <strong style="color:var(--gold)">topology (connectivity)</strong> without exact dimensions — a bridge between schematic and mask layout.</p>
+    <div class="grid2" style="margin-top:.8rem;">
+      <div>
+        <p style="color:#fff;font-weight:600;margin-bottom:.5rem;">Standard Colour Coding:</p>
+        <ul style="list-style:none;font-size:.88rem;">
+          <li><span style="color:#ff0000">━━</span> N-diffusion (NMOS active)</li>
+          <li><span style="color:#00aa00">━━</span> P-diffusion (PMOS active)</li>
+          <li><span style="color:#aaaaaa">━━</span> Polysilicon (gate)</li>
+          <li><span style="color:#4444ff">━━</span> Metal 1 (first metal layer)</li>
+          <li><span style="color:#ffaa00">━━</span> Metal 2 (second metal layer)</li>
+          <li><span style="color:var(--gold)">✕</span> Via / Contact</li>
+        </ul>
+      </div>
+      <div>
+        <p style="color:#fff;font-weight:600;margin-bottom:.5rem;">Steps to draw Stick Diagram:</p>
+        <ol style="font-size:.88rem;color:var(--muted);padding-left:1.1rem;">
+          <li>Draw NMOS at bottom (n-diffusion, horizontal)</li>
+          <li>Draw PMOS at top (p-diffusion, horizontal)</li>
+          <li>Draw poly gates (vertical lines crossing diffusion)</li>
+          <li>Connect VDD (top) and GND (bottom) rails</li>
+          <li>Add output metal connections</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex reveal">
+    <div class="ex-tag">Analogy — Stick Diagram vs Blueprint</div>
+    <p>A stick diagram is like the <strong>sketch on a napkin</strong> an architect draws before creating detailed CAD drawings. When building a Metro station in Pune, the architect first sketches which rooms connect where (stick diagram), then creates exact blueprints with measurements (layout). Similarly, a chip designer sketches the stick diagram to plan connectivity, then converts to exact layout with λ-rule dimensions.</p>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">🗺️</span>Layout Designing</h3>
+    <p>Layout is the <strong style="color:#fff">actual mask-level representation</strong> of the circuit — polygons on different layers that define the physical structure of the chip. Tools like Cadence Virtuoso, Mentor Graphics Calibre are used.</p>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Layer</th><th>Purpose</th><th>Colour (typical)</th></tr>
+        <tr><td>N-Well</td><td>PMOS substrate region</td><td>Light green</td></tr>
+        <tr><td>Active (OD)</td><td>Transistor source/drain/channel</td><td>Yellow-green</td></tr>
+        <tr><td>Polysilicon (PO)</td><td>Gate electrode</td><td>Red</td></tr>
+        <tr><td>Contact (CO)</td><td>Active/Poly to Metal 1</td><td>Black square</td></tr>
+        <tr><td>Metal 1 (M1)</td><td>First routing layer</td><td>Blue</td></tr>
+        <tr><td>Via (V1)</td><td>Metal 1 to Metal 2</td><td>Black square</td></tr>
+        <tr><td>Metal 2 (M2)</td><td>Second routing layer</td><td>Pink/Magenta</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept reveal">
+    <h3><span class="ic">🔢</span>Euler's Rule for VLSI Physical Design</h3>
+    <p>Euler's method is used to find the <strong style="color:#fff">optimal gate ordering</strong> in a standard cell layout to minimise the number of diffusion breaks (which wastes area). The steps are:</p>
+    <ol style="margin-top:.6rem;padding-left:1.1rem;font-size:.93rem;color:var(--muted);">
+      <li style="margin-bottom:.4rem;">Draw the <strong style="color:#fff">circuit graph</strong> with transistors as edges</li>
+      <li style="margin-bottom:.4rem;">Find an <strong style="color:#fff">Eulerian path</strong> through the NMOS network graph</li>
+      <li style="margin-bottom:.4rem;">Apply the <strong style="color:#fff">same gate ordering</strong> to both PMOS and NMOS</li>
+      <li style="margin-bottom:.4rem;">If an Eulerian path exists, the layout has <strong style="color:var(--gold)">no diffusion breaks</strong> → minimum area cell</li>
+      <li style="margin-bottom:.4rem;">Draw the stick diagram using this ordering, then do full layout</li>
+    </ol>
+  </div>
+
+  <div class="info reveal">
+    <div class="ii">🏆</div>
+    <p><strong>Why Euler's Rule Matters:</strong> Diffusion breaks (where n-diffusion is interrupted) waste silicon area. Using Euler's path, designers can eliminate breaks and reduce cell area by 20–30%. Intel uses this technique in every standard cell library design at their fabs.</p>
+  </div>
+</section>
+</div><!-- /container -->
+
+<!-- ══════════ MCQ SECTION ══════════ -->
+<div id="mcq-section" style="position:relative;z-index:1;background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);border-top:1px solid var(--border);">
+<div class="container">
+<section style="padding:4rem 0;">
+  <div class="mcq-hdr reveal">
+    <div class="sh" style="justify-content:center;text-align:center;">
+      <div class="lbl" style="justify-content:center;">🎯 Practice Zone</div>
+      <h2 style="font-family:'Fraunces',serif;font-size:2rem;color:var(--gold)">20 MCQs — Test Your Knowledge!</h2>
+    </div>
+    <p>Click an option to answer instantly. Explanations revealed on submit.</p>
+    <div class="mcq-meta">
+      <span>⏱ No time limit</span>
+      <span id="ac">0 / 20 answered</span>
+      <span id="cc">✅ 0 correct</span>
+    </div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog" style="width:0%"></div></div>
+  </div>
+
+  <div id="scoreboard">
+    <h3 id="score-txt">Score: 0/20</h3>
+    <p id="score-msg">Keep practising!</p>
+  </div>
+
+  <div id="mcq-container"></div>
+
+  <div class="mcq-ctrl">
+    <button class="btn btn-gold" onclick="submitQ()">Submit & See Score</button>
+    <button class="btn btn-ghost" onclick="resetQ()">Reset Quiz</button>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- ══════════ SHORT QA ══════════ -->
+<div class="container">
+<section class="qa-section" id="short-qa">
+  <div class="sh reveal">
+    <div class="lbl">Short Answer Questions</div>
+    <h2>📝 10 Short Questions (2–3 Marks)</h2>
+  </div>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.4rem;">Click to expand answers. Perfect for quick revision.</p>
+  <div id="short-container"></div>
+</section>
+
+<!-- ══════════ LONG QA ══════════ -->
+<section class="qa-section" id="long-qa">
+  <div class="sh reveal">
+    <div class="lbl">Long Answer Questions</div>
+    <h2>📚 10 Long Questions (5–10 Marks)</h2>
+  </div>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.4rem;">University exam-style questions with detailed model answers.</p>
+  <div id="long-container"></div>
+</section>
+</div>
+
+<footer>
+  <div class="fl">⬡ Digital VLSI Design</div>
+  <p>Unit I — Introduction · BTEEV602 · Third Year Semester VI · 3 Credits</p>
+  <p style="margin-top:.3rem;color:rgba(168,144,96,.4);">Dr. Sohel Rana · Dept. of Electronics Engineering (VLSI D&T)</p>
+</footer>
+
+<script>
+// ─── MCQ DATA ───
+const mcqs = [
+  {q:"Moore's Law states that the number of transistors on a chip doubles approximately every:",
+   opts:["6 months","12 months","18–24 months","5 years"],ans:2,
+   exp:"Gordon Moore (1965) observed transistor count doubles every ~18–24 months. This has driven the entire semiconductor industry for 60 years."},
+  {q:"Which of the following correctly represents the VLSI design flow order?",
+   opts:["Layout → Logic → Fabrication → Test","Specification → Architecture → Logic → Circuit → Layout → Fabrication → Test","Fabrication → Layout → Logic → Specification","Circuit → Architecture → Specification → Test"],ans:1,
+   exp:"VLSI Design Flow is top-down: Specification → Architecture → Logic Design → Circuit Design → Physical Layout → Fabrication → Testing."},
+  {q:"The Y-Chart in VLSI design was proposed by:",
+   opts:["Gordon Moore and Robert Noyce","Gajski and Kuhn","Carver Mead and Lynn Conway","John von Neumann"],ans:1,
+   exp:"The Gajski-Kuhn Y-Chart (1983) represents VLSI design across three domains: Behavioural, Structural, and Physical."},
+  {q:"In the Y-Chart, which domain describes the functionality (WHAT the system does)?",
+   opts:["Physical Domain","Structural Domain","Behavioural Domain","Logical Domain"],ans:2,
+   exp:"The Behavioural Domain describes what the system does — its algorithm and function, from system level down to transistor-level differential equations."},
+  {q:"Which VLSI design style offers the BEST performance and smallest area but takes the longest time?",
+   opts:["FPGA","Gate Array","Standard Cell","Full Custom"],ans:3,
+   exp:"Full Custom design gives maximum performance and minimum area because every transistor is hand-optimised. Apple M-series chips use full custom for critical cores."},
+  {q:"In lambda-based design rules, if λ = 50nm, what is the minimum wire width?",
+   opts:["50nm","100nm (2λ)","150nm (3λ)","25nm (0.5λ)"],ans:1,
+   exp:"Minimum wire width = 2λ. If λ = 50nm, then minimum width = 2 × 50nm = 100nm. Lambda rules are scalable across technology nodes."},
+  {q:"A Stick Diagram in VLSI layout uses lines to represent:",
+   opts:["Exact transistor dimensions only","Circuit topology using colour-coded layers without exact geometry","Only metal routing layers","Power supply connections only"],ans:1,
+   exp:"Stick diagrams show circuit topology using colour-coded lines for different layers (red=poly, blue=metal1, green/red=n/p diffusion) without exact dimensions."},
+  {q:"Euler's Rule in VLSI physical design is used to:",
+   opts:["Calculate power dissipation","Find optimal transistor sizing","Find optimal gate ordering to minimise diffusion breaks","Determine clock frequency"],ans:2,
+   exp:"Euler's method finds an Eulerian path through the transistor graph. Applying the same gate order to PMOS and NMOS eliminates diffusion breaks, reducing cell area."},
+  {q:"Which of the following is NOT a major VLSI design issue?",
+   opts:["Power dissipation","Propagation delay","Choice of programming language","Process variability"],ans:2,
+   exp:"Major VLSI design issues are power, speed/timing, area, reliability, thermal management, and process variability. Choice of programming language is a software concern."},
+  {q:"Standard Cell design belongs to which category of VLSI design styles?",
+   opts:["Full Custom","Semi-Custom","Programmable","Analog"],ans:1,
+   exp:"Standard Cell design is a Semi-Custom approach — it uses pre-designed, pre-characterised library cells. The designer connects cells but doesn't design individual transistors."},
+  {q:"In VLSI, 'lambda (λ)' is defined as:",
+   opts:["The full feature size of the process","Half the minimum feature size","The wavelength of light used in lithography","The supply voltage"],ans:1,
+   exp:"λ = half the minimum feature size. This scalable unit allows design rules to be expressed independently of specific process nodes (e.g., λ=50nm for 100nm process)."},
+  {q:"Moving INWARD (toward the centre) on the Y-Chart represents:",
+   opts:["Higher abstraction level","Lower abstraction level (more detail)","Moving between domains","Increasing clock frequency"],ans:1,
+   exp:"Moving inward on the Y-Chart means going to lower abstraction (more detail). System level is outermost; transistor level is innermost (centre)."},
+  {q:"Which layer in CMOS layout is used as the gate electrode of a transistor?",
+   opts:["N-diffusion","Metal 1","Polysilicon","N-well"],ans:2,
+   exp:"Polysilicon (Poly) forms the gate electrode in CMOS. Where poly crosses n-diffusion → NMOS; where poly crosses p-diffusion → PMOS."},
+  {q:"What is the primary advantage of FPGA over full custom ASIC?",
+   opts:["Better performance","Lower power consumption","Reconfigurability (can be reprogrammed)","Smaller die area"],ans:2,
+   exp:"FPGAs are field-programmable — they can be reconfigured after manufacturing. ISRO uses FPGAs in spacecraft so software updates can be sent from Earth post-launch."},
+  {q:"The 'Specification' step in VLSI design flow defines:",
+   opts:["The exact transistor sizes","Functionality, speed, power, and cost requirements","The layout of metal layers","The test vectors for verification"],ans:1,
+   exp:"System Specification defines what the chip must accomplish: functionality, operating frequency, power budget, I/O count, and manufacturing cost targets."},
+  {q:"In a standard cell library, all cells have:",
+   opts:["Same width and height","Same height but variable width","Same width but variable height","Random dimensions"],ans:1,
+   exp:"Standard cells all have the same fixed height (so they can be arranged in rows) but variable width depending on their logic complexity. This enables automated place-and-route."},
+  {q:"Which phenomenon causes wires in VLSI chips to degrade and fail over time due to electron flow?",
+   opts:["Hot carrier injection","Electromigration","Latch-up","Oxide breakdown"],ans:1,
+   exp:"Electromigration is the gradual displacement of metal atoms caused by electron current flow. It causes wire thinning and eventual open circuit failures over years of operation."},
+  {q:"Which step converts a gate-level netlist into a physical layout?",
+   opts:["Logic synthesis","Simulation","Place and Route (Physical Design)","RTL coding"],ans:2,
+   exp:"Place and Route is the Physical Design step that takes the gate-level netlist and converts it into a geometric layout by placing cells and routing interconnects."},
+  {q:"In VLSI design, 'NRE cost' stands for:",
+   opts:["Net Routing Efficiency","Non-Recurring Engineering cost","Noise Reduction Element","Normalised Runtime Estimation"],ans:1,
+   exp:"NRE (Non-Recurring Engineering) cost is the one-time design and mask cost paid before any chips are made. Full custom has very high NRE; FPGAs have near-zero NRE."},
+  {q:"The 'Structural Domain' in the Y-Chart at the RTL level contains:",
+   opts:["Boolean equations","ALU, Registers, Multiplexers","MOSFET transistors","Metal routing layers"],ans:1,
+   exp:"At RTL level in the Structural Domain, the circuit is composed of modules like ALU, registers, multiplexers, and data buses — building blocks of a processor."}
+];
+
+// ─── SHORT QA ───
+const shortQA = [
+  {q:"State Moore's Law and explain its significance in VLSI.",
+   a:`<strong>Moore's Law (Gordon Moore, 1965):</strong> The number of transistors on an integrated circuit doubles approximately every 18–24 months while the cost per transistor halves.<br><br>
+   <strong>Significance:</strong><ul><li>Drives exponential growth in computing power</li><li>Enables smaller, faster, cheaper chips each generation</li><li>Predicted the entire roadmap of the semiconductor industry</li><li>Led to modern smartphones, AI chips, and cloud computing infrastructure</li></ul>`},
+  {q:"What are the three domains in the Gajski-Kuhn Y-Chart? Give one example of each.",
+   a:`The Y-Chart has three domains:<ul>
+   <li><strong>Behavioural Domain:</strong> Describes what the system does. Example: Algorithm for an FFT processor.</li>
+   <li><strong>Structural Domain:</strong> Describes how the system is built. Example: ALU made of adders, registers, and MUX.</li>
+   <li><strong>Physical Domain:</strong> Describes the geometric layout. Example: Standard cell placement and metal routing on silicon.</li></ul>`},
+  {q:"What is a Stick Diagram? State its purpose in VLSI layout.",
+   a:`A <strong>Stick Diagram</strong> is a simplified, colour-coded line drawing that represents the topology (connectivity) of a CMOS circuit layout without specifying exact dimensions.<br><br>
+   <strong>Purpose:</strong><ul><li>Acts as a bridge between circuit schematic and full mask layout</li><li>Allows designers to plan connectivity and layer usage quickly</li><li>Helps identify optimal gate ordering before doing full layout</li><li>Much faster to draw than a complete layout</li></ul>
+   Colours: Red=poly, Blue=Metal1, Green=n-diff, Olive=p-diff, Cross=contact.`},
+  {q:"Define Design Rules in VLSI. What are lambda-based design rules?",
+   a:`<strong>Design Rules</strong> are geometric constraints specified by the foundry (fab) that define minimum dimensions and spacings for each layer in the layout to ensure correct, reliable fabrication.<br><br>
+   <strong>Lambda (λ)-based Rules:</strong> λ = half the minimum feature size. Rules expressed as multiples of λ make them technology-scalable:<ul>
+   <li>Min wire width = 2λ</li><li>Min spacing = 3λ</li><li>Contact size = 2λ × 2λ</li></ul>
+   Same design rules work for any process by just changing the value of λ.`},
+  {q:"What is Full Custom design? Give one example.",
+   a:`<strong>Full Custom Design:</strong> A VLSI design methodology where every transistor, wire, and layout polygon is designed from scratch by the designer to achieve maximum performance, minimum area, and lowest power.<br><br>
+   Advantages: Best performance, smallest area.<br>Disadvantages: Very expensive, time-consuming (months to years), requires highly skilled designers.<br><br>
+   <strong>Example:</strong> Apple M2/M3 chip's high-performance processor cores are full-custom designed by Apple's silicon team for maximum speed and efficiency.`},
+  {q:"List any four major VLSI design issues and explain one briefly.",
+   a:`<strong>Four VLSI Design Issues:</strong><ul>
+   <li>Power Dissipation (Dynamic + Static/Leakage)</li>
+   <li>Speed / Propagation Delay</li>
+   <li>Area / Integration Density</li>
+   <li>Reliability (Electromigration, Hot carrier, Latch-up)</li>
+   <li>Thermal Management (Heat dissipation)</li>
+   <li>Process Variability (Random dopant fluctuations)</li></ul>
+   <strong>Power Dissipation (detailed):</strong> As transistor density increases, total power P = C·V²·f (dynamic) + Ileakage·V (static). At 5nm nodes, leakage power can exceed 30% of total power, making it a critical design constraint.`},
+  {q:"Explain the difference between Standard Cell and Gate Array design.",
+   a:`<table style="font-size:.85rem;border-collapse:collapse;width:100%">
+   <tr><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">Aspect</th><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">Standard Cell</th><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">Gate Array</th></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Transistors</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Custom fabricated</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Pre-fabricated array</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Customisation</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Full netlist freedom</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Only routing layers</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Performance</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Better</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Moderate</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Time-to-market</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Medium</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Faster</td></tr></table>`},
+  {q:"What is the VLSI Design Flow? Name all steps in order.",
+   a:`The VLSI Design Flow is the step-by-step process to convert a system idea into a working chip:<ol>
+   <li><strong>System Specification</strong> — Define functionality, speed, power, cost</li>
+   <li><strong>Architectural Design</strong> — Block-level partitioning (CPU, Memory, I/O)</li>
+   <li><strong>Logic Design (RTL)</strong> — Verilog/VHDL description, state machines</li>
+   <li><strong>Circuit Design</strong> — Gate/transistor-level netlist</li>
+   <li><strong>Physical Design (Layout)</strong> — Place and Route, Stick diagram → Mask layout</li>
+   <li><strong>Fabrication</strong> — Silicon wafer processing (photolithography, doping)</li>
+   <li><strong>Testing and Packaging</strong> — Wafer test, die packaging, final product</li></ol>`},
+  {q:"What is Euler's Rule in VLSI physical design? Why is it used?",
+   a:`<strong>Euler's Rule (Eulerian Path Method):</strong> A technique to find the optimal ordering of transistor gates in a standard cell layout by finding an Eulerian path through the transistor graph.<br><br>
+   <strong>Why used:</strong> If the same gate ordering is possible in both PMOS and NMOS networks (i.e., an Eulerian path exists through both), then the diffusion regions need no breaks — resulting in a compact, minimum-area cell layout.<br><br>
+   <strong>Benefit:</strong> Eliminates diffusion breaks → reduces cell area by 20–30% → significant silicon savings across millions of standard cells in a chip.`},
+  {q:"Explain the concept of 'Physical Domain' in the Y-Chart with levels of abstraction.",
+   a:`The <strong>Physical Domain</strong> in the Y-Chart describes the geometric representation of the circuit on silicon at different levels:<ul>
+   <li><strong>System level:</strong> Chip floor plan — positions of major blocks</li>
+   <li><strong>Module level:</strong> Layout of sub-blocks and their connections</li>
+   <li><strong>Cell level:</strong> Standard cell layout with exact polygon shapes</li>
+   <li><strong>Transistor level:</strong> Full custom transistor layout with exact dimensions</li></ul>
+   Moving inward on the Y-axis increases detail. The Physical Domain is used in Place-and-Route (EDA) tools to generate the final GDSII file sent to the foundry for chip fabrication.`}
+];
+
+// ─── LONG QA ───
+const longQA = [
+  {q:"Explain Moore's Law in detail. Discuss the trends and projections in VLSI circuits and the challenges faced as we approach physical limits.",
+   a:`<strong>Moore's Law (1965):</strong> Gordon Moore, co-founder of Intel, observed that transistor count per chip doubles every ~18–24 months while cost per transistor halves. This exponential trend has driven the semiconductor industry for over 60 years.<br><br>
+   <strong>Key Data Points:</strong><ul>
+   <li>1971 — Intel 4004: 2,300 transistors, 10µm, 740kHz</li>
+   <li>1993 — Intel Pentium: 3.1 million transistors, 800nm, 66MHz</li>
+   <li>2006 — Intel Core 2 Duo: 291 million transistors, 65nm, 3.2GHz</li>
+   <li>2023 — Apple M2 Ultra: 134 billion transistors, 5nm TSMC</li></ul>
+   <strong>VLSI Trends:</strong><ul>
+   <li><em>Increasing:</em> Integration density, speed, functionality, memory capacity</li>
+   <li><em>Decreasing:</em> Feature size, supply voltage, cost/function, power/operation</li></ul>
+   <strong>Projections:</strong> The ITRS (International Technology Roadmap for Semiconductors) predicts scaling to 2nm and below using FinFET, GAAFET (Gate-All-Around), and 3D stacking technologies.<br><br>
+   <strong>Challenges at Physical Limits:</strong><ul>
+   <li><strong>Quantum tunneling:</strong> At sub-3nm, electrons can tunnel through gate oxide, causing leakage</li>
+   <li><strong>Short channel effects:</strong> DIBL, threshold voltage roll-off in sub-7nm transistors</li>
+   <li><strong>Lithography limits:</strong> Extreme UV (EUV) lithography needed for sub-7nm patterning</li>
+   <li><strong>Heat dissipation:</strong> Power density exceeds practical cooling limits</li>
+   <li><strong>Economic limits:</strong> Mask costs exceed $100 million at 3nm node</li></ul>
+   <strong>Future directions:</strong> 3D-IC stacking, chiplets, carbon nanotube transistors, and neuromorphic computing are being explored to continue performance scaling beyond traditional Moore's Law.`},
+  {q:"Draw and explain the complete VLSI circuit design flow with a suitable real-world example.",
+   a:`The VLSI Design Flow is a structured, hierarchical process to transform a system concept into a fabricated, tested chip. It follows a top-down methodology:<br><br>
+   <strong>Step 1 — System Specification:</strong> Define the chip's requirements: functionality (what it does), performance (clock speed), power budget (mW), I/O count, cost target, and reliability requirements. Example: A 5G modem chip — 1GHz, <1W, 256-bit data bus.<br><br>
+   <strong>Step 2 — Architectural Design:</strong> Partition the system into functional blocks: modem core, baseband processor, memory controller, RF interface. Define data flow and control signals between blocks using block diagrams.<br><br>
+   <strong>Step 3 — Logic Design (RTL):</strong> Each block is described using Verilog/VHDL at the Register Transfer Level. State machines, Boolean equations, and timing diagrams are created. RTL simulation verifies functional correctness.<br><br>
+   <strong>Step 4 — Circuit Design:</strong> Logic synthesis converts RTL to a gate-level netlist. STA (Static Timing Analysis) verifies timing. Power estimation is performed. Scan chains for testability are inserted.<br><br>
+   <strong>Step 5 — Physical Design (Layout):</strong> Floorplanning → Placement → Clock Tree Synthesis (CTS) → Routing → DRC (Design Rule Check) → LVS (Layout vs Schematic). Output: GDSII file.<br><br>
+   <strong>Step 6 — Fabrication:</strong> GDSII sent to foundry (e.g., TSMC, Samsung). Photolithography, oxidation, doping, etching, metallisation repeated ~50–100 times per wafer. Takes 6–12 weeks.<br><br>
+   <strong>Step 7 — Testing and Packaging:</strong> Wafer-level testing (probe card), die sawing, wire bonding or flip-chip packaging, final test (ATE), burn-in reliability screening.<br><br>
+   <strong>Real-World Example — Qualcomm Snapdragon 8 Gen 3:</strong><br>
+   Specification (5G+AI+GPU, 3nm TSMC) → Architecture (Kyro CPU + Adreno GPU + Hexagon DSP) → RTL design in SystemVerilog → Synthesis to 3nm standard cells → Physical design in Cadence Innovus → TSMC 3nm fabrication → Testing and BGA packaging → Ships to Samsung/Xiaomi for flagship phones.`},
+  {q:"Describe the Gajski-Kuhn Y-Chart in detail. Explain all three domains and levels of abstraction with examples.",
+   a:`The <strong>Gajski-Kuhn Y-Chart (1983)</strong> is a fundamental conceptual model for organising VLSI design across three domains and multiple abstraction levels.<br><br>
+   <strong>Structure:</strong> Three axes arranged like the letter Y from a common centre. Moving outward = higher abstraction; moving inward = more implementation detail.<br><br>
+   <strong>1. Behavioural Domain (What the system DOES):</strong><br>
+   Describes the function/algorithm of the design without structural details.<ul>
+   <li>System level: High-level algorithm (e.g., MP3 compression algorithm)</li>
+   <li>RTL level: Register transfers, state machine description (e.g., CPU fetch-decode-execute FSM)</li>
+   <li>Logic level: Boolean equations (e.g., Y = A·B + C̄)</li>
+   <li>Transistor level: Differential equations (e.g., Kirchhoff current laws)</li></ul>
+   <strong>2. Structural Domain (How the system is BUILT):</strong><br>
+   Describes the components and their interconnections.<ul>
+   <li>System level: CPU, memory, bus, I/O controller</li>
+   <li>RTL level: ALU, registers, program counter, multiplexers</li>
+   <li>Logic level: NAND, NOR, D flip-flop, 2:1 MUX</li>
+   <li>Transistor level: Individual NMOS and PMOS transistors</li></ul>
+   <strong>3. Physical Domain (Where everything IS placed):</strong><br>
+   Describes the geometric layout on silicon.<ul>
+   <li>System level: Chip floorplan (block positions)</li>
+   <li>Module level: Block layout with power rings</li>
+   <li>Cell level: Standard cell rows and routing</li>
+   <li>Transistor level: Full-custom transistor layout polygons</li></ul>
+   <strong>Design Process on Y-Chart:</strong><br>
+   Synthesis moves from Behavioural → Structural at the same abstraction level. Layout/physical design moves from Structural → Physical. Verification moves from Physical back to Behavioural (simulation).<br><br>
+   <strong>Significance:</strong> The Y-Chart provides a unified framework to understand where any design task fits, what tools are needed, and what verification is required at each step.`},
+  {q:"Compare and contrast Full Custom, Standard Cell, and FPGA design styles in VLSI.",
+   a:`VLSI design styles are categorised based on the degree of customisation, ranging from maximum flexibility (full custom) to maximum speed-to-market (FPGA).<br><br>
+   <strong>1. Full Custom Design:</strong><br>
+   Every transistor is individually designed and optimised. The designer has complete control over shape, size, and placement of every polygon on every layer.<br>
+   <em>Advantages:</em> Maximum performance (fastest), minimum area, lowest power.<br>
+   <em>Disadvantages:</em> Extremely time-consuming (12–24 months), highest design cost, requires expert designers.<br>
+   <em>Applications:</em> Intel/AMD CPU cores, Apple M-series chips, analog blocks (PLL, ADC), SRAM cells.<br><br>
+   <strong>2. Standard Cell (Semi-Custom):</strong><br>
+   Uses a pre-designed, pre-characterised library of standard cells (AND, OR, NAND, D-FF, MUX). All cells share a fixed height. EDA tools automatically place and route cells.<br>
+   <em>Advantages:</em> Good performance, reasonable design time (3–6 months), lower design risk.<br>
+   <em>Disadvantages:</em> Not as efficient as full custom, library constraints.<br>
+   <em>Applications:</em> ASICs for mobile phones, networking chips, IoT SoCs.<br><br>
+   <strong>3. FPGA (Field-Programmable Gate Array):</strong><br>
+   A pre-fabricated chip containing a large array of configurable logic blocks (CLBs), programmable interconnects, and I/O blocks. Design is implemented by programming configuration bits.<br>
+   <em>Advantages:</em> Reprogrammable, fastest time-to-market, no NRE cost, ideal for prototyping.<br>
+   <em>Disadvantages:</em> 5–10× larger area than ASIC, 3–5× more power, lower speed, higher unit cost at volume.<br>
+   <em>Applications:</em> Aerospace (ISRO satellites), defence, prototyping, digital signal processing, ADAS.<br><br>
+   <strong>Comparative Table:</strong><br>
+   <table style="font-size:.83rem;border-collapse:collapse;width:100%;margin-top:.5rem">
+   <tr><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">Parameter</th><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">Full Custom</th><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">Standard Cell</th><th style="border:1px solid rgba(240,165,0,.3);padding:.4rem;color:var(--gold)">FPGA</th></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Performance</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Highest</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">High</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Moderate</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Area Efficiency</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Best</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Good</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Poor (5–10× overhead)</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Design Time</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">24+ months</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">6–12 months</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Weeks</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">NRE Cost</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">$50M+</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">$5–50M</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Near zero</td></tr>
+   <tr><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Reprogrammable</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">No</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">No</td><td style="border:1px solid rgba(255,255,255,.1);padding:.4rem">Yes</td></tr></table>`},
+  {q:"Explain VLSI Design Issues in detail. How do Power, Area, and Speed form a design triangle?",
+   a:`Modern VLSI design is constrained by several fundamental issues that create trade-offs. The three primary constraints — Power, Area, and Speed — form the PAS design triangle.<br><br>
+   <strong>1. Power Dissipation:</strong><br>
+   Total power P = P_dynamic + P_static<br>
+   P_dynamic = α · C · V²DD · f (switching activity × capacitance × voltage² × frequency)<br>
+   P_static = Ileakage × VDD (subthreshold + gate oxide leakage)<br>
+   <em>Techniques to reduce:</em> Multi-threshold CMOS, clock gating, power gating, voltage/frequency scaling (DVFS).<br><br>
+   <strong>2. Speed (Propagation Delay):</strong><br>
+   tp = 0.69 · RC (first-order RC model). Delay through logic paths must meet timing closure.<br>
+   <em>Factors affecting speed:</em> Load capacitance, wire length, transistor sizing, supply voltage.<br>
+   <em>Techniques:</em> Pipeline design, parallel architecture, wire sizing, repeater insertion.<br><br>
+   <strong>3. Area:</strong><br>
+   More transistors = larger die area = higher manufacturing cost. Die cost ∝ Die Area².<br>
+   <em>Techniques:</em> Hierarchical design, block reuse, standard cell optimisation, smaller process node.<br><br>
+   <strong>4. Reliability Issues:</strong><ul>
+   <li><strong>Electromigration:</strong> Current density degrades metal wires over time (fixes: wider wires, redundant vias)</li>
+   <li><strong>Hot Carrier Injection:</strong> Energetic carriers damage gate oxide in short channels</li>
+   <li><strong>Oxide Breakdown (TDDB):</strong> Electric field degrades gate dielectric over time</li>
+   <li><strong>Latch-up:</strong> Parasitic SCR thyristor in CMOS triggers uncontrolled current (fix: guard rings)</li></ul>
+   <strong>5. Thermal Issues:</strong> Power density in 3nm chips exceeds 100 W/cm². Thermal vias, flipchip bonding, advanced heatsinks, and liquid cooling are used.<br><br>
+   <strong>6. Process Variability:</strong> At sub-10nm, random dopant fluctuations cause Vth variations of ±50mV. Statistical design and multiple patterning lithography help manage this.<br><br>
+   <strong>The PAS Triangle:</strong> Improving one parameter typically degrades another — higher speed needs more power; larger area gives more speed but costs more; lower power often means lower speed. Designers balance these trade-offs based on application requirements.`},
+  {q:"Explain Design Rules in VLSI. Describe lambda-based rules and their importance with a practical example.",
+   a:`<strong>Design Rules (DR):</strong> Foundry-specified geometric constraints on layout that ensure fabricated circuits function correctly and reliably. They account for lithographic resolution, etch tolerances, and alignment errors in manufacturing.<br><br>
+   <strong>Types of Design Rules:</strong><ul>
+   <li><strong>Width Rules:</strong> Minimum width of diffusion, poly, metal to survive etching</li>
+   <li><strong>Spacing Rules:</strong> Minimum gap between parallel wires to prevent electrical shorts</li>
+   <li><strong>Enclosure Rules:</strong> Contact must be enclosed by metal by a minimum overlap</li>
+   <li><strong>Extension Rules:</strong> Poly must extend beyond active region by minimum amount</li>
+   <li><strong>Density Rules:</strong> Layer coverage must stay within min-max range for uniform etching</li></ul>
+   <strong>Lambda (λ)-based Design Rules:</strong><br>
+   λ = half the minimum feature size (minimum gate length / 2)<br>
+   Rules are expressed as multiples of λ, making them technology-independent:<ul>
+   <li>Active (n-diff/p-diff) width: 3λ</li>
+   <li>Poly width: 2λ</li>
+   <li>Poly spacing: 3λ</li>
+   <li>Metal 1 width: 3λ</li>
+   <li>Metal 1 spacing: 3λ</li>
+   <li>Contact size: 2λ × 2λ</li>
+   <li>Contact-to-gate spacing: 2λ</li></ul>
+   <strong>Practical Example — 180nm process (TSMC):</strong><br>
+   λ = 90nm<br>
+   Minimum poly width = 2λ = 180nm = 0.18µm (matches process name)<br>
+   Metal 1 minimum width = 3λ = 270nm<br>
+   Metal 1 minimum spacing = 3λ = 270nm<br><br>
+   <strong>Importance:</strong><ul>
+   <li>DRC (Design Rule Check) tools automatically verify all rules before tape-out</li>
+   <li>Violations cause manufacturing defects and yield loss</li>
+   <li>λ-based rules allow a design to be ported to different technology nodes by simply rescaling λ</li>
+   <li>Modern process nodes (7nm, 5nm) have thousands of design rules managed by EDA tools</li></ul>`},
+  {q:"Describe the Physical Design process in VLSI. Explain stick diagrams, layout designing, and Euler's Rule in detail.",
+   a:`Physical Design converts a gate-level netlist into a geometric layout (GDSII) that defines the photomasks for chip fabrication. It is the most critical step — errors here go to silicon.<br><br>
+   <strong>Physical Design Steps:</strong><ol>
+   <li><strong>Floorplanning:</strong> Determine sizes and positions of major blocks. Define power/ground rail structure. Estimate wire lengths and timing.</li>
+   <li><strong>Placement:</strong> EDA tool places standard cells within floorplan rows, minimising wire length and timing violations.</li>
+   <li><strong>Clock Tree Synthesis (CTS):</strong> Design a balanced clock distribution network with minimum skew across all flip-flops.</li>
+   <li><strong>Routing:</strong> Connect all nets (wires) between cells using multiple metal layers, following design rules.</li>
+   <li><strong>DRC/LVS:</strong> Design Rule Check + Layout vs Schematic verification to confirm correctness.</li>
+   <li><strong>GDSII export:</strong> Final layout file sent to foundry for mask making.</li></ol>
+   <strong>Stick Diagrams:</strong><br>
+   A schematic representation of layout using colour-coded lines for each layer without exact dimensions:<ul>
+   <li>Green/Red lines = n-diff/p-diff</li>
+   <li>Gray/Black line = Polysilicon</li>
+   <li>Blue line = Metal 1</li>
+   <li>Pink = Metal 2</li>
+   <li>X symbol = Contact/Via</li></ul>
+   Stick diagrams allow quick planning of topology before committing to full layout.<br><br>
+   <strong>Euler's Rule for Gate Ordering:</strong><br>
+   For a CMOS standard cell with a complex gate (e.g., OAI22 — OR-AND-INVERT):<ol>
+   <li>Draw the NMOS transistor network as a graph (nodes = source/drain, edges = gate/transistor)</li>
+   <li>Find an Eulerian Path through the NMOS graph (a path that uses every edge exactly once)</li>
+   <li>The sequence of gates along this path = optimal gate ordering</li>
+   <li>Apply same ordering to PMOS network</li>
+   <li>If same ordering achieves Eulerian path in PMOS too → no diffusion breaks needed → minimum area cell</li></ol>
+   <strong>Example:</strong> For NAND3 gate: Gates = A, B, C. NMOS series connection. Euler path: A-B-C. If PMOS parallel connection also allows A-B-C ordering → single diffusion for each network → 25% smaller cell.<br><br>
+   <strong>Impact:</strong> Modern standard cell libraries use Euler's method to minimise area. A 20% reduction in cell area across a chip with 50 million standard cells saves enormous silicon cost.`},
+  {q:"Explain the significance of the Y-Chart in understanding VLSI design. How does it help in choosing appropriate design tools and methodologies?",
+   a:`The <strong>Gajski-Kuhn Y-Chart</strong> is more than a conceptual diagram — it is a practical framework used by EDA tool vendors, chip designers, and educators to systematically organise the design process.<br><br>
+   <strong>Y-Chart Structure Recap:</strong><br>
+   Three domains (Behavioural, Structural, Physical) with four abstraction levels (System, RTL, Logic, Transistor). Moving inward = more implementation detail.<br><br>
+   <strong>Tool Selection Using Y-Chart:</strong><ul>
+   <li><strong>Behavioural level tools:</strong> SystemC simulators, MATLAB (algorithm level)</li>
+   <li><strong>RTL tools:</strong> Verilog/VHDL simulators (ModelSim, Questasim), synthesis (Synopsys Design Compiler)</li>
+   <li><strong>Logic level tools:</strong> Technology mapping, timing analysis (Primetime)</li>
+   <li><strong>Physical level tools:</strong> Place & Route (Cadence Innovus, Synopsys ICC2), layout (Virtuoso)</li>
+   <li><strong>Verification across domains:</strong> Formal verification (Cadence JasperGold), DRC/LVS (Calibre)</li></ul>
+   <strong>Design Flow Mapping on Y-Chart:</strong><br>
+   Each step in the design flow can be precisely located on the Y-Chart:<ol>
+   <li>Algorithm design → Behavioural, System level (outer)</li>
+   <li>RTL coding → Behavioural, RTL level</li>
+   <li>Logic synthesis → moves from Behavioural to Structural (same RTL level)</li>
+   <li>Standard cell mapping → Structural, Logic level</li>
+   <li>Physical implementation → Physical domain, cell level</li></ol>
+   <strong>Significance for Methodology:</strong><ul>
+   <li>Helps identify gaps in the design process</li>
+   <li>Shows where verification is needed (at every level, cross-domain)</li>
+   <li>Guides abstraction level selection for optimisation</li>
+   <li>Enables parallel design work at different abstraction levels</li>
+   <li>Widely taught in universities (IITs, NITs use Y-Chart framework for VLSI courses)</li></ul>
+   The Y-Chart remains the most fundamental conceptual model in VLSI education, 40+ years after its introduction.`},
+  {q:"Discuss the trends and projections in VLSI circuits. What are the challenges faced at sub-10nm technology nodes?",
+   a:`<strong>Historical Trends in VLSI:</strong><br>
+   The semiconductor industry has followed Moore's Law with remarkable precision:<ul>
+   <li>Feature size: 10µm (1971) → 5nm (2023) — 2000× reduction in 52 years</li>
+   <li>Clock speed: 740kHz (4004) → 5.8GHz (Core i9) — 7800× increase</li>
+   <li>Transistors/chip: 2,300 → 134 billion — 58 million× increase</li>
+   <li>Supply voltage: 12V → 0.7V (2023) — 17× reduction</li></ul>
+   <strong>Current Status (2024):</strong><br>
+   TSMC mass produces 3nm chips. 2nm process (N2) in development. ASML's High-NA EUV enables sub-2nm patterning.<br><br>
+   <strong>Challenges at Sub-10nm:</strong><ul>
+   <li><strong>Quantum tunneling:</strong> Gate oxide (SiO₂) reached its limit at ~1.2nm (5 atomic layers). HfO₂ high-k dielectric used now, but leakage remains critical below 5nm.</li>
+   <li><strong>Short Channel Effects (SCE):</strong> DIBL (Drain Induced Barrier Lowering), threshold voltage roll-off, subthreshold slope degradation. FinFET and GAAFET structures used to improve electrostatic control.</li>
+   <li><strong>Lithography:</strong> DUV lithography limited to ~40nm resolution. EUV (13.5nm wavelength) enables patterning to ~15nm. High-NA EUV for sub-10nm features. Costs: $180M per EUV scanner.</li>
+   <li><strong>Wire resistance:</strong> At sub-10nm, copper wire resistance increases due to electron-surface scattering. Ruthenium and cobalt explored as alternatives for local interconnects.</li>
+   <li><strong>Variability:</strong> Random dopant fluctuations, line-edge roughness, and metal grain variability cause significant Vth mismatch (σVth > 50mV at 5nm).</li>
+   <li><strong>Heat:</strong> Power density >1 kW/cm² at chip hotspots exceeds traditional cooling. 3D stacking worsens thermal challenges.</li></ul>
+   <strong>Future Projections and Solutions:</strong><ul>
+   <li><strong>2nm GAAFET:</strong> Samsung/TSMC replacing FinFET with Gate-All-Around (Nanosheet/Nanowire) transistors for better electrostatic control</li>
+   <li><strong>3D Integration:</strong> Vertical stacking of dies (HBM memory, Intel Foveros) to continue density scaling without feature size reduction</li>
+   <li><strong>Chiplets:</strong> Disaggregated dies from different fabs, assembled in advanced packages (AMD, Apple use this)</li>
+   <li><strong>New materials:</strong> 2D materials (MoS₂, graphene), carbon nanotube FETs, GaN for post-silicon era</li>
+   <li><strong>Neuromorphic chips:</strong> Alternative computing paradigm inspired by brain — IBM TrueNorth, Intel Loihi</li></ul>`},
+  {q:"Explain the VLSI design issues related to power dissipation. What techniques are used to manage power in modern chips?",
+   a:`Power dissipation is arguably the most critical VLSI design challenge in the post-Dennard-scaling era (post-2005).<br><br>
+   <strong>Types of Power Dissipation:</strong><br>
+   <strong>1. Dynamic Power (Switching Power):</strong><br>
+   P_dynamic = α · C_load · V²DD · f<br>
+   Where α = switching activity (0–1), C = load capacitance, V = supply voltage, f = clock frequency.<br>
+   This dominates in active (high-activity) circuits.<br><br>
+   <strong>2. Short-Circuit Power:</strong><br>
+   P_sc = Isc · VDD (during transitions, both PMOS and NMOS briefly conduct simultaneously)<br>
+   Minimised by fast transition times (strong drivers).<br><br>
+   <strong>3. Static Power (Leakage):</strong><br>
+   P_static = Ileakage · VDD<br>
+   Dominated by subthreshold leakage and gate oxide leakage. Increases exponentially with temperature and as Vth is lowered for speed.<br>
+   At 5nm nodes, leakage can be 40–50% of total power.<br><br>
+   <strong>Power Management Techniques:</strong><ul>
+   <li><strong>Voltage Scaling:</strong> P ∝ V²DD — reducing VDD from 1V to 0.7V cuts dynamic power by 51%</li>
+   <li><strong>DVFS (Dynamic Voltage and Frequency Scaling):</strong> Reduce V and f during low-load periods. Used in all smartphones (ARM big.LITTLE architecture)</li>
+   <li><strong>Clock Gating:</strong> Disable clock to idle logic blocks. Saves α·C·V²·f where α→0</li>
+   <li><strong>Power Gating:</strong> Cut power supply to idle blocks using sleep transistors. Reduces leakage to near zero</li>
+   <li><strong>Multi-VDD Design:</strong> Use different supply voltages for different blocks — high-speed core at high VDD, memory at low VDD</li>
+   <li><strong>Multi-Vth (MVT):</strong> Use high-Vth transistors (low leakage) on non-critical paths; low-Vth (high speed) only on critical paths</li>
+   <li><strong>Body Biasing:</strong> Apply reverse body bias to increase Vth and reduce leakage in standby mode</li>
+   <li><strong>Technology Scaling:</strong> Smaller transistors have less capacitance, reducing switching energy</li></ul>
+   <strong>Real-world Example:</strong><br>
+   Apple's A17 Pro chip (iPhone 15 Pro) uses all these techniques: DVFS adjusts cores from 600MHz to 3.78GHz, clock gating saves up to 30% power in background tasks, power gating shuts down GPU during phone calls, MVT ensures efficiency cores consume <5% power of performance cores. Result: Best performance-per-watt in mobile industry.`}
+];
+
+// ─── RENDER MCQ ───
+let answered=0, correct=0;
+const userAns = new Array(mcqs.length).fill(null);
+
+function renderMCQ(){
+  const c = document.getElementById('mcq-container');
+  c.innerHTML = mcqs.map((m,i)=>`
+    <div class="mcq-card" id="mc${i}">
+      <div class="mcq-q"><span class="qn">${i+1}</span><span>${m.q}</span></div>
+      <div class="opts">
+        ${m.opts.map((o,j)=>`
+          <button class="opt" id="o${i}${j}" onclick="pick(${i},${j})" data-q="${i}" data-o="${j}">
+            <span class="opt-lbl">${'ABCD'[j]}</span>${o}
+          </button>`).join('')}
+      </div>
+      <div class="exp" id="exp${i}">💡 ${m.exp}</div>
+    </div>`).join('');
+}
+
+function pick(qi,oi){
+  if(userAns[qi]!==null)return;
+  userAns[qi]=oi;
+  answered++;
+  if(oi===mcqs[qi].ans)correct++;
+  document.getElementById(`o${qi}${oi}`).classList.add('selected');
+  ['o'+qi+'0','o'+qi+'1','o'+qi+'2','o'+qi+'3'].forEach(id=>{ const el=document.getElementById(id); if(el)el.disabled=true; });
+  document.getElementById('ac').textContent=`${answered} / 20 answered`;
+  document.getElementById('cc').textContent=`✅ ${correct} correct`;
+  document.getElementById('prog').style.width=`${(answered/20)*100}%`;
+}
+
+function submitQ(){
+  mcqs.forEach((m,i)=>{
+    const card=document.getElementById(`mc${i}`);
+    for(let j=0;j<4;j++){
+      const btn=document.getElementById(`o${i}${j}`);
+      if(btn){ btn.disabled=true; if(j===m.ans)btn.classList.add('correct-opt'); }
+    }
+    if(userAns[i]!==null && userAns[i]!==m.ans)
+      document.getElementById(`o${i}${userAns[i]}`).classList.add('wrong-opt');
+    card.classList.add(userAns[i]===m.ans?'correct':'wrong');
+    document.getElementById(`exp${i}`).style.display='block';
+  });
+  const sb=document.getElementById('scoreboard');
+  sb.style.display='block';
+  const pct=(correct/20)*100;
+  document.getElementById('score-txt').textContent=`Your Score: ${correct} / 20 (${pct.toFixed(0)}%)`;
+  const msgs=['Keep studying the notes above! 📖','Good effort! Review weak areas. 💪','Nice work! Almost there! 🎯','Excellent! You know this unit well! 🌟','Perfect score! Outstanding! 🏆'];
+  document.getElementById('score-msg').textContent=msgs[Math.min(4,Math.floor(pct/25))];
+  sb.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function resetQ(){
+  userAns.fill(null); answered=0; correct=0;
+  document.getElementById('ac').textContent='0 / 20 answered';
+  document.getElementById('cc').textContent='✅ 0 correct';
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('scoreboard').style.display='none';
+  renderMCQ();
+}
+
+// ─── RENDER QA ───
+function renderQA(data, cid, type){
+  document.getElementById(cid).innerHTML=data.map((item,i)=>`
+    <div class="acc">
+      <button class="acc-head" onclick="tog(this)">
+        <span class="acc-num">${i+1}</span>
+        <span class="acc-type type-${type}">${type==='s'?'2-3M':'5-10M'}</span>
+        <span style="flex:1">${item.q}</span>
+        <span class="acc-arr">▼</span>
+      </button>
+      <div class="acc-body">${item.a}</div>
+    </div>`).join('');
+}
+
+function tog(btn){
+  const body=btn.nextElementSibling;
+  const open=btn.classList.contains('open');
+  btn.closest('section').querySelectorAll('.acc-head.open').forEach(b=>{b.classList.remove('open');b.nextElementSibling.classList.remove('open');});
+  if(!open){btn.classList.add('open');body.classList.add('open');}
+}
+
+// ─── SCROLL REVEAL ───
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ─── INIT ───
+renderMCQ();
+renderQA(shortQA,'short-container','s');
+renderQA(longQA,'long-container','l');
+</script>
+</body>
+</html>
